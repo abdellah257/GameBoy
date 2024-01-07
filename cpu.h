@@ -1,20 +1,24 @@
+#ifndef CPU_H
+#define CPU_H
+
 #include "registers.h"
 #include <stdint.h>
 
 /* Z80 CPU Structure */
-typedef struct {
+struct CPU {
     /* data */
-    Registers* R;
+    struct Registers* R;
 
     uint8_t pc; uint8_t sp;
     uint8_t m; uint8_t t;
 
 } CPU;
 
-CPU* Z80;
+struct CPU *Z80;
 /* Initialize the CPU */
-CPU* initCPU(){
-    CPU* p = (CPU*)malloc(sizeof(CPU));
+struct CPU* initCPU()
+{
+    struct CPU* p = malloc(sizeof(struct CPU));
     p->R = initRegs();
     p->m = 0;
     p->t = 0;
@@ -24,7 +28,7 @@ CPU* initCPU(){
 }
 
 /* Add Register Y to Register X (ADD X Y) */
-void ADD(uint8_t* X, uint8_t* Y){
+void ADD_(uint8_t* X, uint8_t* Y){
     *X += *Y;
     Z80->R->F = 0;
     if(!(*X & 255)) Z80->R->F |= 0x80;
@@ -33,6 +37,4 @@ void ADD(uint8_t* X, uint8_t* Y){
     Z80->m = 1; Z80->t = 4;
 }
 
-
-
-
+#endif

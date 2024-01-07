@@ -1,9 +1,13 @@
+#ifndef MEMORY_H
+#define MEMORY_H
+
 #include <stdlib.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include "cpu.h"
 
 /* Memory Manangement Unit */
-typedef struct {
+struct MemoryUnit {
 
     bool inbios;
 
@@ -15,11 +19,11 @@ typedef struct {
     char* vram;
 } MemoryUnit;
 
-MemoryUnit* MMU;
+struct MemoryUnit* MMU;
 
 /* Initialize the Memory MU */
-MemoryUnit* initMMU(){
-    MemoryUnit* p = (MemoryUnit*) malloc(sizeof(MemoryUnit));
+struct MemoryUnit* initMMU(){
+    struct MemoryUnit* p = malloc(sizeof(MemoryUnit));
     p->inbios = false;
     return p;
 }
@@ -96,3 +100,5 @@ char rb(uint16_t addr){
 short rw(uint16_t addr){
     return rb(addr) + (rb(addr+1) << 8);
 }
+
+#endif
