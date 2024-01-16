@@ -1,0 +1,12 @@
+#include <registers.h>
+
+
+Registers* initRegs(){
+
+    Registers* p = (Registers*)malloc(sizeof(Registers));
+
+    p->A = 0; p->B = 0; p->C = 0; p->D = 0;
+    p->E = 0; p->F = 0; p->L = 0; p->H = 0;
+
+    return p;
+}
