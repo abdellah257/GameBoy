@@ -4,10 +4,10 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include "cpu.h"
+#include <cpu.h>
 
 /* Memory Manangement Unit */
-struct MemoryUnit {
+typedef struct MemoryUnit {
 
     bool inbios;
 
@@ -19,11 +19,11 @@ struct MemoryUnit {
     char* vram;
 } MemoryUnit;
 
-struct MemoryUnit* MMU;
+MemoryUnit* MMU;
 
 /* Initialize the Memory MU */
-struct MemoryUnit* initMMU(){
-    struct MemoryUnit* p = malloc(sizeof(MemoryUnit));
+MemoryUnit* initMMU(){
+    MemoryUnit* p = (MemoryUnit*)malloc(sizeof(MemoryUnit));
     p->inbios = false;
     return p;
 }

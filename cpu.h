@@ -1,11 +1,11 @@
 #ifndef CPU_H
 #define CPU_H
 
-#include "registers.h"
+#include <registers.h>
 #include <stdint.h>
 
 /* Z80 CPU Structure */
-struct CPU {
+typedef struct CPU {
     /* data */
     struct Registers* R;
 
@@ -14,11 +14,11 @@ struct CPU {
 
 } CPU;
 
-struct CPU *Z80;
+CPU *Z80;
 /* Initialize the CPU */
-struct CPU* initCPU()
+CPU* initCPU()
 {
-    struct CPU* p = malloc(sizeof(struct CPU));
+    CPU* p = malloc(sizeof(CPU));
     p->R = initRegs();
     p->m = 0;
     p->t = 0;
