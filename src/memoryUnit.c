@@ -76,3 +76,14 @@ char rb(uint16_t addr){
 short rw(uint16_t addr){
     return rb(addr) + (rb(addr+1) << 8);
 }
+
+
+void wb(uint16_t addr, char val)
+{
+
+}
+
+void ww(uint16_t add, char* val)
+{
+
+}

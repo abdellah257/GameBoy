@@ -30,4 +30,8 @@ char rb(uint16_t addr);
 /* Read 16 bit data */
 short rw(uint16_t addr);
 
+void wb(uint16_t addr, char value);
+
+void ww(uint16_t addr, char* value);
+
 #endif
