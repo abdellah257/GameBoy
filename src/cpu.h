@@ -9,9 +9,8 @@ typedef struct CPU {
     /* data */
     struct Registers* R;
 
-    char pc; char sp;
-    unsigned char m;
-    unsigned char t;
+    unsigned short pc; short sp;
+    unsigned char m; unsigned char t;
 
 } CPU;
 

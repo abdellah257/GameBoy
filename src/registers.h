@@ -9,8 +9,9 @@ typedef struct Registers
 {
     /* data */
     char A; char B; char C; char D;
-    char E; char F; char H; char L;
-
+    char E; char H; char L;
+    
+    unsigned char F;
 } Registers;
 
 /* Initialize registers */
