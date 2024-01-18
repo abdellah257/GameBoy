@@ -30,8 +30,6 @@ void LD_A()
     Z80->m = 4; Z80->t = 16;
 }
 
-
-
 void ADD_A(char Y)
 {
     Z80->R->A += Y;
@@ -80,3 +78,4 @@ void POP_(char* X, char* Y)
 
     Z80->m = 3; Z80->t = 12;
 }
+
