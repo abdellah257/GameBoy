@@ -1,6 +1,8 @@
+#include <stdint.h>
+#include <string.h>
+
 #include <cpu.h>
 #include <memoryUnit.h>
-
 
 CPU* initCPU()
 {

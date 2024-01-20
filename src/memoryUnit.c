@@ -1,7 +1,10 @@
+#include <stdint.h>
 #include <memoryUnit.h>
+#include <cpu.h>
+
 
 MemoryUnit* initMMU(){
-    MemoryUnit* p = (MemoryUnit*)malloc(sizeof(MemoryUnit));
+    MemoryUnit* p = malloc(sizeof(MemoryUnit));
     p->inbios = false;
     return p;
 }
