@@ -8,8 +8,10 @@
 typedef struct Registers
 {
     /* data */
-    char A; char B; char C; char D;
-    char E; char H; char L;
+    char A; 
+    char BC[2]; 
+    char DE[2];
+    char HL[2];
     
     unsigned char F;
 } Registers;

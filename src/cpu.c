@@ -17,12 +17,22 @@ CPU* initCPU()
 
 void resetCPU()
 {
-    Z80->R->A = 0; Z80->R->B = 0; Z80->R->C = 0; Z80->R->D = 0; 
-    Z80->R->E = 0; Z80->R->F = 0; Z80->R->H = 0; Z80->R->L = 0; 
+    Z80->R->A = 0; Z80->R->BC[0] = 0; Z80->R->BC[1] = 0; Z80->R->DE[0] = 0; 
+    Z80->R->DE[1] = 0; Z80->R->F = 0; Z80->R->HL[0] = 0; Z80->R->HL[1] = 0; 
 
     Z80->pc = 0; Z80->sp = 0;
     Z80->m = 0; Z80->t = 0;
 }
+
+/* Instructions */
+
+// Block 0
+void NOP_()
+{
+    Z80->m = 1; Z80->t = 4;
+}
+
+
 
 void LD_A()
 {
@@ -57,11 +67,6 @@ void CP_A(char Y)
     Z80->m = 1; Z80->t = 4;
 }
 
-void NOP_()
-{
-    Z80->m = 1; Z80->t = 4;
-}
-
 void PUSH_(char* X, char* Y)
 {
     Z80->sp--;
@@ -80,4 +85,3 @@ void POP_(char* X, char* Y)
 
     Z80->m = 3; Z80->t = 12;
 }
-

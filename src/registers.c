@@ -5,8 +5,8 @@ Registers* initRegs(){
 
     Registers* p = (Registers*)malloc(sizeof(Registers));
 
-    p->A = 0; p->B = 0; p->C = 0; p->D = 0;
-    p->E = 0; p->F = 0; p->L = 0; p->H = 0;
+    p->A = 0; p->BC[0] = 0; p->BC[1] = 0; p->DE[0] = 0;
+    p->DE[1] = 0; p->F = 0; p->HL[0] = 0; p->HL[1] = 0;
 
     return p;
 }
