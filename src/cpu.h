@@ -58,14 +58,14 @@ void LD_(char* X, char* Y);
 void HALT();
 
 // Block 2: 8-bit arithmetic 
-void ADD_A(char Y);
-void ADC_A(char Y);
-void SUB_A(char Y);
-void SBC_A(char Y);
-void AND_A(char Y);
-void XOR_A(char Y);
-void OR_A(char Y);
-void CP_A(char Y);
+void ADD_A(unsigned char Y);
+void ADC_A(unsigned char Y);
+void SUB_A(unsigned char Y);
+void SBC_A(unsigned char Y);
+void AND_A(unsigned char Y);
+void XOR_A(unsigned char Y);
+void OR_A(unsigned char Y);
+void CP_A(unsigned char Y);
 
 // Block 3
 void RET();

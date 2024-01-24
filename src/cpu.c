@@ -42,20 +42,20 @@ void LD_A()
     Z80->m = 4; Z80->t = 16;
 }
 
-void ADD_A(char Y)
+void ADD_A(unsigned char Y)
 {
-    Z80->R->A += Y;
-    Z80->R->F = 0;
-    char temp = Z80->R->A;
+    int temp = Z80->R->A + Y;
 
-    if(!(temp & 255)) Z80->R->F |= 0x80;
-    if(!(temp > 255)) Z80->R->F |= 0x40;
-    Z80->R->A &= 255;
+    Z80->R->A += Y;
+    Z80->R->F = 0x00;
+
+    if(!Z80->R->A) Z80->R->F |= Z;
+    if( temp > 255) Z80->R->F |= C;
 
     Z80->m = 1; Z80->t = 4;
 }
 
-void CP_A(char Y)
+void CP_A(unsigned char Y)
 {
     char temp = Z80->R->A;
     temp -= Y;
