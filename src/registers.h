@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#define N 0x00  // NULL
 #define Z 0x80  // Zero Flag
 #define S 0x40  // Substraction Flag
 #define H 0x20  // Half Carry Flag

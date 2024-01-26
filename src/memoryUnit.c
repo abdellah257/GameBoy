@@ -86,7 +86,7 @@ void wb(uint16_t addr, char val)
 
 }
 
-void ww(uint16_t add, char* val)
+void ww(uint16_t add, char val[2])
 {
 
 }
