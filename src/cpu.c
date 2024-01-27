@@ -130,6 +130,78 @@ void LD_r8_mm8(unsigned char* X, unsigned char imm8){
     Z80->m = 2; Z80->t = 8;
 }
 
+void RLCA(){
+
+    unsigned char temp = Z80->R->A >> 7;
+    Z80->R->A = (Z80->R->A << 1) | (Z80->R->A >> 7);
+    if(! temp) Z80->R->F |= C;
+
+    Z80->m = 1; Z80->t = 4;
+}
+
+void RRCA(){
+
+    unsigned char temp = Z80->R->A << 7;
+    Z80->R->A = (Z80->R->A >> 1) | (Z80->R->A << 7);
+    if(! (temp >> 7)) Z80->R->F |= C;
+
+    Z80->m = 1; Z80->t = 4;
+}
+
+void RLA(){
+
+    if(Z80->R->F & C == C){
+        Z80->R->A = (Z80->R->A << 1) | 0x01 ;
+    }
+    else{
+        Z80->R->A = (Z80->R->A << 1);
+    }
+    Z80->m = 1; Z80->t = 4;
+}
+
+void RRA(){
+
+    if(Z80->R->F & C == C){
+        Z80->R->A = (Z80->R->A >> 1) | 0x80 ;
+    }
+    else{
+        Z80->R->A = (Z80->R->A >> 1);
+    }
+    Z80->m = 1; Z80->t = 4;
+}
+
+void DAA(){
+
+}
+
+void SCF(){
+    Z80->R->F |= C;
+    Z80->R->F &= ~S;
+    Z80->R->F &= ~H;
+
+    Z80->m = 1; Z80->t = 4;
+}
+
+void CCF(){
+    Z80->R->F = ~(Z80->R->F & C);
+    Z80->R->F &= ~S;
+    Z80->R->F &= ~H;
+
+    Z80->m = 1; Z80->t = 4;
+}
+
+void CPL(){
+    Z80->R->A = ~Z80->R->A;
+    Z80->R->F |= H;
+    Z80->R->F |= S;
+
+    Z80->m = 1; Z80->t = 4;
+}
+
+void JR(char imm8){
+    
+}
+
 // Block 2
 
 void ADD_A(unsigned char Y)
