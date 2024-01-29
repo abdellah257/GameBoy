@@ -50,8 +50,8 @@ void CPL();
 void SCF();
 void CCF();
 
-void JR(char imm8);
-void JR_C(char* cond, char imm8);
+void JR(uint16_t addr);
+void JR_C(char cond, uint16_t addr);
 
 void STOP();
 

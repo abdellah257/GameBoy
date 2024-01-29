@@ -198,9 +198,60 @@ void CPL(){
     Z80->m = 1; Z80->t = 4;
 }
 
-void JR(char imm8){
-    
+void JR(uint16_t addr){
+
+    uint16_t offset = Z80->pc - addr;
+
+    if ( offset < 128 | offset > -127){
+        Z80->pc += offset;
+    }
+
+    Z80->m = 3; Z80->t = 8;
 }
+
+void JR_C(char cond, uint16_t addr){
+
+    switch(cond){
+
+        case Z:
+            if(Z80->R->F & Z == Z){
+                JR(addr);
+            }
+            else{
+                Z80->m = 2;
+            }
+            break;
+        case ~Z:
+            if(Z80->R->F & Z == N){
+                JR(addr);
+            }
+            else{
+                Z80->m = 2;
+            }
+            break;
+        case C:
+            if(Z80->R->F & Z == Z){
+                JR(addr);
+            }
+            else{
+                Z80->m = 2;
+            }
+            break;
+        case ~C:
+            if(Z80->R->F & Z == Z){
+                JR(addr);
+            }
+            else{
+                Z80->m = 2;
+            }
+            break;
+        default:
+            Z80->m = 2;
+            break;
+    }
+}
+
+
 
 // Block 2
 
