@@ -251,16 +251,27 @@ void JR_C(char cond, uint16_t addr){
     }
 }
 
+// Block 1
 
+void LD_(unsigned char* X, unsigned char* Y){
+    /* LD X Y  load Y(copy) on X */
+    unsigned char temp = *Y;
+    *X = temp;
+    Z80->m = 1;
+}
+
+void HALT(){
+    // More complicated
+    // Leave for later 
+}
 
 // Block 2
 
-void ADD_A(unsigned char Y)
+void ADD_A_r8(unsigned char Y)
 {
     int temp = Z80->R->A + Y;
 
     Z80->R->A += Y;
-    Z80->R->F = 0x00;
 
     if(!Z80->R->A) Z80->R->F |= Z;
     if( temp > 255) Z80->R->F |= C;
@@ -268,7 +279,76 @@ void ADD_A(unsigned char Y)
     Z80->m = 1; Z80->t = 4;
 }
 
-void CP_A(unsigned char Y)
+void ADC_A_r8(unsigned char r8){
+    int temp = Z80->R->A + r8;
+
+    Z80->R->A += r8;
+
+    if(Z80->R->F & C == C){
+        Z80->R->A += 1;
+    }
+
+    if(!Z80->R->A) Z80->R->F |= Z;
+    if( temp > 255) Z80->R->F |= C;
+
+    Z80->m = 1; Z80->t = 4;
+}
+
+void SUB_A_r8(unsigned char r8){
+
+    if(r8 > Z80->R->A){
+        Z80->R->F |= C;
+    }
+    Z80->R->F |= S;
+
+    int temp = Z80->R->A - r8;
+    if(!temp) Z80->R->F |= Z;
+
+    Z80->R->A = (unsigned char)(temp & 0xFF);
+    Z80->m = 1;
+}
+
+void SBC_A_r8(unsigned char r8){
+
+    unsigned char carry = (Z80->R->F & C == C)? 1:0;
+    if(r8 + carry > Z80->R->A ){
+        Z80->R->F |= C;
+    }
+
+    int temp = Z80->R->A - r8 - carry;
+    if(!temp) Z80->R->F |= Z;
+    Z80->R->F |= S;
+
+    Z80->R->A = temp & 0xFF;
+    Z80->m = 1;
+}
+
+void AND_A_r8(unsigned char r8){
+
+    Z80->R->A &= r8;
+
+    if(!Z80->R->A) Z80->R->F |= Z;
+    Z80->R->F |= H;
+
+    Z80->m = 1;
+}
+
+void XOR_A_r8(unsigned char r8){
+
+    Z80->R->A ^= r8;
+    if(!Z80->R->A) Z80->R->F |= Z;
+
+    Z80->m = 1;
+}
+
+void OR_A_r8(unsigned char r8){
+    Z80->R->A |= r8;
+    if(!Z80->R->A) Z80->R->F |= Z;
+
+    Z80->m = 1;
+}
+
+void CP_A_r8(unsigned char Y)
 {
     int temp = Z80->R->A;
     temp -= Y;

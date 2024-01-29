@@ -56,18 +56,18 @@ void JR_C(char cond, uint16_t addr);
 void STOP();
 
 // Block 1: 8-bit r to r loads
-void LD_(char* X, char* Y);
+void LD_(unsigned char* X, unsigned char* Y);
 void HALT();
 
 // Block 2: 8-bit arithmetic 
-void ADD_A(unsigned char Y);
-void ADC_A(unsigned char Y);
-void SUB_A(unsigned char Y);
-void SBC_A(unsigned char Y);
-void AND_A(unsigned char Y);
-void XOR_A(unsigned char Y);
-void OR_A(unsigned char Y);
-void CP_A(unsigned char Y);
+void ADD_A_r8(unsigned char r8);
+void ADC_A_r8(unsigned char r8);
+void SUB_A_r8(unsigned char r8);
+void SBC_A_r8(unsigned char r8);
+void AND_A_r8(unsigned char r8);
+void XOR_A_r8(unsigned char r8);
+void OR_A_r8(unsigned char r8);
+void CP_A_r8(unsigned char r8);
 
 // Block 3
 void RET();
