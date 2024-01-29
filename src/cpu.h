@@ -23,21 +23,23 @@ void resetCPU();
 /* Instructions */
 
 // Block 0
-void NPO_();
 
-void LD_mm(short* r16, short imm16);
-void LD_mm_A(short addr);
-void LD_A_mm();
-void LD_imm_sp(short imm16);
+void NOP_();
 
-void INC_16(short* r16);
-void DEC_16(short* r16);
-void ADD_r16(char* X, char* Y, short* r16);
+void LD_imm(unsigned char* r16, unsigned short imm16);
+void LD_mm_A(unsigned short addr);
+void LD_A_mm(unsigned short addr);
+void LD_mm_sp(unsigned short imm16);
+void LD_sp_imm(unsigned short imm16);
 
 void INC(char* r8);
 void DEC(char* r8);
 
-void LD_mm8(char* X, char imm8);
+void INC_16(unsigned char* r16);
+void DEC_16(unsigned char* r16);
+void ADD_hl_r16(unsigned short* r16);
+
+void LD_r8_mm8(unsigned char* X, unsigned char imm8);
 
 void RLCA();
 void RRCA();
@@ -48,8 +50,8 @@ void CPL();
 void SCF();
 void CCF();
 
-void JR(char imm8);
-void JR_C(char* cond, char imm8);
+void JR(uint16_t addr);
+void JR_C(char cond, uint16_t addr);
 
 void STOP();
 

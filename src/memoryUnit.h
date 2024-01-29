@@ -34,8 +34,8 @@ char rb(uint16_t addr);
 /* Read 16 bit data */
 short rw(uint16_t addr);
 
-void wb(uint16_t addr, char* val);
+void wb(uint16_t addr, unsigned char val);
 
-void ww(uint16_t addr, char* val);
+void ww(uint16_t addr, unsigned char val[2]);
 
 #endif

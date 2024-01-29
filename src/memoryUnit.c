@@ -81,12 +81,12 @@ short rw(uint16_t addr){
 }
 
 
-void wb(uint16_t addr, char val)
+void wb(uint16_t addr, unsigned char val)
 {
 
 }
 
-void ww(uint16_t add, char* val)
+void ww(uint16_t add, unsigned char val[2])
 {
 
 }

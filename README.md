@@ -7,7 +7,7 @@
 - Flag Register (F):
 
     - Zero: 0x80, set if the last operation produced a zeo result.
-    - Operation: 0x40, Set if the last operation was a substraction.
+    - Substraction: 0x40, Set if the last operation was a substraction.
     - Half_carry: 0x20, Set if, in the result of the last operation, the lower half of the byte overflowed past 15.
     - Carry: 0x10, if the last op produced a result ; over 255 for addition or under 0 for substraction.
 
