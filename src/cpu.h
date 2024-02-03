@@ -70,14 +70,24 @@ void OR_A_r8(unsigned char r8);
 void CP_A_r8(unsigned char r8);
 
 // Block 3
+
+void ADD_A_imm(unsigned char r8);
+void ADC_A_imm(unsigned char r8);
+void SUB_A_imm(unsigned char r8);
+void SBC_A_imm(unsigned char r8);
+void AND_A_imm(unsigned char r8);
+void XOR_A_imm(unsigned char r8);
+void OR_A_imm(unsigned char r8);
+void CP_A_imm(unsigned char r8);
+
 void RET();
 void RETI();
-void RET_C(char* cond);
-void JP(short imm16);
-void JP_C(char* cond, short imm16);
+void RET_C(char cond);
+void JP(unsigned short imm16);
+void JP_C(char cond, unsigned short imm16);
 void JP_HL();
-void CALL(short imm16);
-void CALL_C(char* cond, short imm16);
+void CALL(unsigned short imm16);
+void CALL_C(char cond, unsigned short imm16);
 void RST(char target[3]);
 
 void PUSH_(char* X, char* Y);
