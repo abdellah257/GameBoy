@@ -1,6 +1,10 @@
-#include <cpu.h>
-#include <memoryUnit.h>
+#include <stdio.h>
 #include <SDL.h>
+
+#include <cpu.h>
+#include <gpu.h>
+#include <memoryUnit.h>
+
 
 SDL_Window* screen;
 SDL_Renderer* render;
@@ -10,6 +14,7 @@ int main(){
 
     Z80 = initCPU();
     MMU = initMMU();
+    GB_GPU = initGPU();
 
     status = init_window();
     if(status) return EXIT_FAILURE;
