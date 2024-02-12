@@ -4,7 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/usr/include/SDL2"
+                "packages/raylib-5.0/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
