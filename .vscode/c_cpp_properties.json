@@ -3,7 +3,7 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**",
+                "${workspaceFolder}/include/**",
                 "packages/raylib-5.0/include"
             ],
             "defines": [],
