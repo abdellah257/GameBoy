@@ -19,7 +19,7 @@ typedef struct MemoryUnit {
     char* vram;
 } MemoryUnit;
 
-MemoryUnit* MMU;
+extern MemoryUnit* MMU;
 
 /* Initialize the Memory MU */
 MemoryUnit* initMMU();

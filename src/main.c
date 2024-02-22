@@ -5,12 +5,11 @@
 #include <gpu.h>
 #include <memoryUnit.h>
 
-static const int screenWidth = 180;
-static const int screenHeight = 140;
+static const int screenWidth = 800;
+static const int screenHeight = 600;
 
 int main(){
 
-    int status;
 
     Z80 = initCPU();
     MMU = initMMU();
@@ -20,9 +19,12 @@ int main(){
 
     SetTargetFPS(24);
 
-    while(! WindowShouldClose())
+    while( !WindowShouldClose() )
     {
-        // Update the Draw Frame
+        BeginDrawing();
+            ClearBackground(RAYWHITE);
+            DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
+        EndDrawing();
     }
     
     CloseWindow();

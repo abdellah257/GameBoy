@@ -1,5 +1,5 @@
-#ifndef CPU_H
-#define CPU_H
+#ifndef CPUU_H
+#define CPUU_H
 
 #include <registers.h>
 #include <stdint.h>
@@ -14,7 +14,7 @@ typedef struct CPU {
 
 } CPU;
 
-CPU *Z80;
+extern CPU *Z80;
 /* Initialize the CPU */
 CPU* initCPU();
 
