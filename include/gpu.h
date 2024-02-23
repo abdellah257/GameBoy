@@ -11,7 +11,7 @@ typedef struct GPU
 }GPU;
 
 
-GPU* GB_GPU;
+extern GPU* GB_GPU;
 
 
 GPU* initGPU();

@@ -2,6 +2,7 @@
 #include <memoryUnit.h>
 #include <cpu.h>
 
+MemoryUnit* MMU;
 
 MemoryUnit* initMMU(){
     MemoryUnit* p = malloc(sizeof(MemoryUnit));

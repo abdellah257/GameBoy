@@ -4,6 +4,8 @@
 #include <cpu.h>
 #include <memoryUnit.h>
 
+CPU *Z80;
+
 CPU* initCPU()
 {
     CPU* p = malloc(sizeof(CPU));
@@ -150,7 +152,7 @@ void RRCA(){
 
 void RLA(){
 
-    if(Z80->R->F & C == C){
+    if((Z80->R->F & C) == C){
         Z80->R->A = (Z80->R->A << 1) | 0x01 ;
     }
     else{
@@ -161,7 +163,7 @@ void RLA(){
 
 void RRA(){
 
-    if(Z80->R->F & C == C){
+    if((Z80->R->F & C) == C){
         Z80->R->A = (Z80->R->A >> 1) | 0x80 ;
     }
     else{
@@ -202,52 +204,46 @@ void JR(uint16_t addr){
 
     uint16_t offset = Z80->pc - addr;
 
-    if ( offset < 128 | offset > -127){
+    if ( (offset < 128) | (offset > -127)){
         Z80->pc += offset;
     }
 
     Z80->m = 3; Z80->t = 8;
 }
 
-void JR_C(char cond, uint16_t addr){
-
-    switch(cond){
-
-        case Z:
-            if(Z80->R->F & Z == Z){
-                JR(addr);
-            }
-            else{
-                Z80->m = 2;
-            }
-            break;
-        case ~Z:
-            if(Z80->R->F & Z == N){
-                JR(addr);
-            }
-            else{
-                Z80->m = 2;
-            }
-            break;
-        case C:
-            if(Z80->R->F & C == C){
-                JR(addr);
-            }
-            else{
-                Z80->m = 2;
-            }
-            break;
-        case ~C:
-            if(Z80->R->F & C == N){
-                JR(addr);
-            }
-            else{
-                Z80->m = 2;
-            }
-            break;
-        default:
+void JR_C(char cond, uint16_t addr)
+{
+    if(cond == Z){
+        if((Z80->R->F & Z)== Z){
+            JR(addr);
+        }
+        else{
             Z80->m = 2;
-            break;
+        }
+    }else if(cond == ~Z){
+        if((Z80->R->F & Z) == N){
+            JR(addr);
+        }
+        else{
+            Z80->m = 2;
+        }
+    }else if(cond == C){
+        if((Z80->R->F & C) == C){
+            JR(addr);
+        }
+        else{
+            Z80->m = 2;
+        }
+    }
+    else if(cond==~C){
+        if((Z80->R->F & C) == N){
+            JR(addr);
+        }
+        else{
+            Z80->m = 2;
+        }
+    }else{
+        Z80->m = 2;
     }
 }
 
@@ -284,7 +280,7 @@ void ADC_A_r8(unsigned char r8){
 
     Z80->R->A += r8;
 
-    if(Z80->R->F & C == C){
+    if((Z80->R->F & C) == C){
         Z80->R->A += 1;
     }
 
@@ -310,8 +306,8 @@ void SUB_A_r8(unsigned char r8){
 
 void SBC_A_r8(unsigned char r8){
 
-    unsigned char carry = (Z80->R->F & C == C)? 1:0;
-    if(r8 + carry > Z80->R->A ){
+    unsigned char carry = ((Z80->R->F & C) == C)? 1:0;
+    if((r8 + carry) > Z80->R->A ){
         Z80->R->F |= C;
     }
 
@@ -406,7 +402,7 @@ void ADC_A_imm(unsigned char r8){
 
     Z80->R->A += r8;
 
-    if(Z80->R->F & C == C){
+    if((Z80->R->F & C) == C){
         Z80->R->A += 1;
     }
 
@@ -432,8 +428,8 @@ void SUB_A_imm(unsigned char r8){
 
 void SBC_A_imm(unsigned char r8){
 
-    unsigned char carry = (Z80->R->F & C == C)? 1:0;
-    if(r8 + carry > Z80->R->A ){
+    unsigned char carry = ((Z80->R->F & C) == C)? 1:0;
+    if((r8 + carry) > Z80->R->A ){
         Z80->R->F |= C;
     }
 
@@ -484,22 +480,22 @@ void CP_A_imm(unsigned char Y)
 
 void RET()
 {
-    POP_r16(Z80->pc);
+    POP_r16(&(Z80->pc));
     Z80->m = 4;
 }
 
 void RET_C(char cond)
 {
     if (cond > 0){
-        if( Z80->R->F & cond == cond){
-            POP_r16(Z80->pc);
+        if( (Z80->R->F & cond) == cond){
+            POP_r16(&(Z80->pc));
             Z80->m = 5;
         }else{
             Z80->m = 3;
         }
     }else{
-        if( Z80->R->F & cond == N){
-            POP_r16(Z80->pc);
+        if( (Z80->R->F & cond) == N){
+            POP_r16(&(Z80->pc));
             Z80->m = 5;
         }else{
             Z80->m = 3;
@@ -521,13 +517,13 @@ void JP(unsigned short imm16)
 void JP_C(char cond, unsigned short imm16)
 {
     if(cond > 0){
-        if(Z80->R->F & cond == cond){
+        if((Z80->R->F & cond) == cond){
             JP(imm16);
         }else{
             Z80->m = 3;
         }
     }else{
-        if(Z80->R->F & cond == N){
+        if((Z80->R->F & cond) == N){
             JP(imm16);
         }else{
             Z80->m = 3;
@@ -537,7 +533,7 @@ void JP_C(char cond, unsigned short imm16)
 
 void JP_HL()
 {
-    unsigned short* temp = &(Z80->R->HL);
+    unsigned short* temp = (unsigned short*)Z80->R->HL;
     Z80->pc = *temp;
     Z80->m = 1;
 }
