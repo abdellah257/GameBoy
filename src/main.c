@@ -5,8 +5,8 @@
 #include <gpu.h>
 #include <memoryUnit.h>
 
-static const int screenWidth = 800;
-static const int screenHeight = 600;
+static const int screenWidth = 600;
+static const int screenHeight = 400;
 
 int main(){
 
@@ -22,8 +22,8 @@ int main(){
     while( !WindowShouldClose() )
     {
         BeginDrawing();
-            ClearBackground(RAYWHITE);
-            DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
+            ClearBackground(BLACK);
+            DrawText("Welcome to GameBoy !", 150, 200, 30, LIGHTGRAY);
         EndDrawing();
     }
     
