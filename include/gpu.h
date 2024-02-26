@@ -2,11 +2,14 @@
 #define GPU_H
 
 #include <stdlib.h>
+#include <raylib.h>
 
 typedef struct GPU 
 {
     int index;
+    int screen_size[2];
     char* vram;
+    Color* pixels;
 
 }GPU;
 
@@ -14,7 +17,7 @@ typedef struct GPU
 extern GPU* GB_GPU;
 
 
-GPU* initGPU();
+GPU* initGPU(int width, int height);
 
 void resetVRAM();
 

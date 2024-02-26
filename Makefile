@@ -20,7 +20,7 @@ $(BINFILE): obj
 obj: $(OBJFILES)
 
 $(PATH2OBJ)/%.o: $(PATH2SRC)/%.c
-	$(CC) -c $(CFLAGS) $(INCLUDES) $(LIBS) $< -o $@
+	$(CC) -c $(CFLAGS) $(INCLUDES) $(LIBS) -lraylib $< -o $@
 
 clean:
 	rm -rf build/* 

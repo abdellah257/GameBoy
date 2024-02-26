@@ -5,15 +5,15 @@
 #include <gpu.h>
 #include <memoryUnit.h>
 
-static const int screenWidth = 600;
-static const int screenHeight = 400;
+static const int screenWidth = 160;
+static const int screenHeight = 144;
 
 int main(){
 
 
     Z80 = initCPU();
     MMU = initMMU();
-    GB_GPU = initGPU();
+    GB_GPU = initGPU(screenWidth, screenHeight);
 
     InitWindow(screenWidth, screenHeight, "GameBoy Emulator");
 
@@ -22,8 +22,15 @@ int main(){
     while( !WindowShouldClose() )
     {
         BeginDrawing();
-            ClearBackground(BLACK);
-            DrawText("Welcome to GameBoy !", 150, 200, 30, LIGHTGRAY);
+        ClearBackground(BLACK);
+        DrawText("Welcome to GameBoy !", 30, 70, 5, LIGHTGRAY);
+        for(int x = 0; x<screenWidth; x++){
+            for(int y =0; y<screenHeight; y++){
+                DrawPixel(x, y, GB_GPU->pixels[y*screenWidth+x]);
+            }
+        }
+
+        
         EndDrawing();
     }
     
