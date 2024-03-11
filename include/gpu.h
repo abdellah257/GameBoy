@@ -6,6 +6,10 @@
 
 typedef struct GPU 
 {
+    int mode;
+    int modeclock;
+    int line;
+
     int index;
     int screen_size[2];
     char* vram;
@@ -21,6 +25,7 @@ GPU* initGPU(int width, int height);
 
 void resetVRAM();
 
+void gpuStep();
 
 
 #endif
