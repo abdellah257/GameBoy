@@ -7,35 +7,40 @@
 #include "cpu.h"
 
 /* Memory Manangement Unit */
-typedef struct MemoryUnit {
-
+typedef struct MemoryUnit
+{
     bool inbios;
 
-    char* bios;
-    char* rom;
-    char* wram;
-    char* eram;
-    char* zram;
-    char* vram;
+    unsigned char *bios;
+    unsigned char *rom;
+    unsigned char *wram;
+    unsigned char *eram;
+    unsigned char *zram;
+    unsigned char *vram;
 } MemoryUnit;
 
-extern MemoryUnit* MMU;
+// The MMU instance
+extern MemoryUnit *MMU;
 
 /* Initialize the Memory MU */
-MemoryUnit* initMMU();
+MemoryUnit *initMMU();
 
+// Resets the MMU
 void resetMMU();
 
+// Load the ROM
 void loadROM();
 
-/* Read 8 bit data */
+// Read 8 bit data
 char rb(uint16_t addr);
 
-/* Read 16 bit data */
+// Read 16 bit data
 short rw(uint16_t addr);
 
+// Write 8 bit data
 void wb(uint16_t addr, unsigned char val);
 
+// Write 16 bit data
 void ww(uint16_t addr, unsigned char val[2]);
 
 #endif
