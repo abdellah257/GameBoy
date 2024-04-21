@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -g -std=gnu11 -Wall -Wparentheses
-INCLUDES = -I$(GAMEBOY)/include -I$(GAMEBOY)/packages/raylib-5.0/include
-LIBS = -L$(GAMEBOY)/packages/raylib-5.0/lib/
+INCLUDES = -I$(GAMEBOY)/include -I$(RAYLIB)/include
+LIBS = -L$(RAYLIB)/lib
 LISTSRC = cpu gpu memoryUnit registers
 
 PATH2SRC = $(GAMEBOY)/src
@@ -15,12 +15,12 @@ BINFILE = $(GAMEBOY)/build/GameBoy.exe
 all: $(BINFILE)
 
 $(BINFILE): obj
-	$(CC) -o $@ $(CFLAGS) $(MAINSRC) $(OBJFILES) $(INCLUDES) $(LIBS) -lraylib
+	$(CC) -o $@ $(CFLAGS) $(MAINSRC) $(OBJFILES) $(INCLUDES) $(LIBS)  -lraylib
 
 obj: $(OBJFILES)
 
 $(PATH2OBJ)/%.o: $(PATH2SRC)/%.c
-	$(CC) -c $(CFLAGS) $(INCLUDES) $(LIBS) -lraylib $< -o $@
+	$(CC) -c $(CFLAGS) $(INCLUDES) $(LIBS) -lraylib  $< -o $@ 
 
 clean:
 	rm -rf build/* 
