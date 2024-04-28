@@ -12,18 +12,6 @@ GPU *initGPU(int width, int height)
     gpu->screen_size[0] = width;
     gpu->screen_size[0] = height;
 
-    gpu->pixels = (Color *)calloc(width * height, sizeof(Color));
-
-    for (int i = 0; i < width / 2; i++)
-    {
-        for (int j = 0; j < height; j++)
-        {
-            gpu->pixels[j * width + i].a = 255;
-            gpu->pixels[j * width + i].b = 255;
-            gpu->pixels[j * width + i].g = 255;
-            gpu->pixels[j * width + i].r = 255;
-        }
-    }
     return gpu;
 }
 
@@ -114,4 +102,18 @@ void updateTile(unsigned short addr, unsigned char val)
         unsigned char index = 1 << (7 - i);
         GB_GPU->tiles_set[tileIndex].p[line][i] = ((MMU->vram[temp] & index) ? 1 : 0) + ((MMU->vram[temp + 1] & index) ? 2 : 0);
     }
+}
+
+void updateMap(unsigned short addr, unsigned char val)
+{
+
+}
+
+int getPixelFromTile(Tile* t, int x, int y)
+{
+    unsigned char xMask = 128 >> x;
+    int p1 = t->p[0][y] & xMask;
+    int p2 = t->p[1][y] & xMask;
+
+    return p1 + 2*p2;
 }
