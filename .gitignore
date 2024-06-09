@@ -1,5 +1,4 @@
 .DS_Store
-.vscode/launch.json
 .vscode/settings.json
 build
-
+packages/raylib-5.0/lib/

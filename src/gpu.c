@@ -6,11 +6,9 @@
 
 GPU *GB_GPU;
 
-GPU *initGPU(int width, int height)
+GPU *initGPU()
 {
     GPU *gpu = (GPU *)malloc(sizeof(GPU));
-    gpu->screen_size[0] = width;
-    gpu->screen_size[0] = height;
 
     return gpu;
 }

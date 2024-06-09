@@ -3,6 +3,7 @@
 
 #include <cpu.h>
 #include <gpu.h>
+#include <screen.h>
 #include <memoryUnit.h>
 
 static const int screenWidth = 160;
@@ -13,7 +14,8 @@ int main()
 
     Z80 = initCPU();
     MMU = initMMU();
-    GB_GPU = initGPU(screenWidth, screenHeight);
+    GB_GPU = initGPU();
+    GB_Win = initScreen(screenWidth, screenHeight);
 
     InitWindow(screenWidth, screenHeight, "GameBoy Emulator");
 
@@ -28,7 +30,7 @@ int main()
         {
             for (int y = 0; y < screenHeight; y++)
             {
-                DrawPixel(x, y, GB_GPU->pixels[y * screenWidth + x]);
+                DrawPixel(x, y, GB_Win->pixels[y * screenWidth + x]);
             }
         }
 

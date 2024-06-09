@@ -1,0 +1,38 @@
+{
+    "configurations": [
+    {
+        "name": "Run GameBoy",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "/home/abdellah257/workspace/GameBoy/build/GameBoy.exe",
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [
+            {
+                "name": "GAMEBOY",
+                "value": "${workspaceFolder}"
+            },
+            {
+                "name": "LD_LIBRARY_PATH",
+                "value": "$GAMEBOY/packages/raylib-5.0/lib:$LD_LIBRARY_PATH"
+            }
+        ],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "setupCommands": [
+            {
+                "description": "Enable pretty-printing for gdb",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": true
+            },
+            {
+                "description": "Set Disassembly Flavor to Intel",
+                "text": "-gdb-set disassembly-flavor intel",
+                "ignoreFailures": true
+            }
+        ],
+        "preLaunchTask": "Build GameBoy",
+    }
+    ]
+}

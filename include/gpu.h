@@ -39,7 +39,7 @@ typedef struct GPU
 extern GPU *GB_GPU;
 
 // Initializes the GPU
-GPU *initGPU(int width, int height);
+GPU *initGPU();
 
 // Resets the Tile Data Set
 void resetTiles();
