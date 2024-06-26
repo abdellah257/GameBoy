@@ -15,7 +15,7 @@ BINFILE = $(GAMEBOY)/build/GameBoy.exe
 all: $(BINFILE)
 
 $(BINFILE): obj
-	$(CC) -o $@ $(CFLAGS) $(MAINSRC) $(OBJFILES) $(INCLUDES) $(LIBS)  -lraylib
+	$(CC) -o $@ $(CFLAGS) $(MAINSRC) $(OBJFILES) $(INCLUDES) $(LIBS)  -lraylib $(FRAMEWORK)
 
 obj: $(OBJFILES)
 
