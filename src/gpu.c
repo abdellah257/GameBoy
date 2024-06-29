@@ -102,6 +102,26 @@ void updateTile(unsigned short addr, unsigned char val)
     }
 }
 
+void updateGpuRegisters(unsigned short addr, unsigned char val)
+{
+    switch(addr){
+        case 0xFF40:
+            GB_GPU->control = val;
+            break;
+        case 0xFF42:
+            GB_GPU->cX = val;
+            break;
+        case 0xFF43:
+            GB_GPU->cY = val;
+            break;
+        case 0xFF47:
+            // TODO: pallete config
+            break;
+        default:
+            break;
+    }
+}
+
 void updateMap(unsigned short addr, unsigned char val)
 {
 

@@ -31,7 +31,9 @@ typedef struct GPU
     Tile tiles_set[TILES_NUMBER];               // The Set of unique Tiles
     TileMap tile_maps[2];                       // the Tile Maps 
 
-    unsigned char cX, cY;                       // Scroll X, Scroll Y ; GPU registers
+    unsigned char control;                      // GPU Control Register 0xFF40
+    unsigned char cX, cY;                       // Scroll X, Scroll Y ; GPU registers 0xFF42, 0xFF43
+    unsigned char cur_scanline;                 // Current Scanline 0xFF44                
     unsigned char background[BGD_DIM][BGD_DIM]; // Screen Background Computed
 } GPU;
 
@@ -52,6 +54,9 @@ void updateTile(unsigned short addr, unsigned char val);
 
 // Updates the Tile Map from the VRAM
 void updateMap(unsigned short addr, unsigned char val);
+
+// Updates the GPU Registers
+void updateGpuRegisters(unsigned short addr, unsigned char val);
 
 // Return the palette of a pixel within a Tile (0...3)
 int getPixelFromTile(Tile* t, int x, int y);
