@@ -7,10 +7,12 @@
 /* Z80 CPU Structure */
 typedef struct CPU {
     /* data */
-    struct Registers* R;
+    struct Registers* R;                    // Registers
 
-    unsigned short pc; short sp;
-    unsigned char m; unsigned char t;
+    unsigned short pc;                      // Program Counter  
+    unsigned short sp;                      // Stack Pointer
+    unsigned char m;                        // CPU M-Cycles
+    unsigned char t;                        // CPU T-Cycles
 
 } CPU;
 
