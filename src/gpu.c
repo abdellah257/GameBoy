@@ -9,7 +9,6 @@ GPU *GB_GPU;
 GPU *initGPU()
 {
     GPU *gpu = (GPU *)malloc(sizeof(GPU));
-
     return gpu;
 }
 
@@ -132,6 +131,6 @@ int getPixelFromTile(Tile* t, int x, int y)
     unsigned char xMask = 128 >> x;
     int p1 = t->p[0][y] & xMask;
     int p2 = t->p[1][y] & xMask;
-
     return p1 + 2*p2;
 }
+

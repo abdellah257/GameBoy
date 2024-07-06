@@ -21,7 +21,6 @@ void resetCPU()
 {
     Z80->R->A = 0; Z80->R->BC[0] = 0; Z80->R->BC[1] = 0; Z80->R->DE[0] = 0; 
     Z80->R->DE[1] = 0; Z80->R->F = 0; Z80->R->HL[0] = 0; Z80->R->HL[1] = 0; 
-
     Z80->pc = 0; Z80->sp = 0;
     Z80->m = 0; Z80->t = 0;
 }
@@ -35,63 +34,47 @@ void NOP_(){
 }
 
 void LD_imm(unsigned char* r16, unsigned short imm16){
-
     unsigned short temp = imm16;
-
     r16[0] = temp & 0xFF;
     r16[1] = (temp >> 8) & 0xFF;
-
     Z80->m = 3; Z80->t = 12;
 }
 
 void LD_mm_A(unsigned short addr){
-
     char val = Z80->R->A;
-
-    wb(addr, val);
-    
+    wb(addr, val);    
 }
 
 void LD_A_mm(unsigned short addr){
-
     unsigned char val = rb(addr);
-
     Z80->R->A = val;
-
     Z80->m = 2; Z80->t = 4;
 }
 
 void LD_sp_imm(unsigned short imm16){
     Z80->sp = imm16;
-
     Z80->m = 3; Z80->t = 12;
 }
 
 void LD_mm_sp(unsigned short addr){
-
     unsigned char temp[2];
     temp[0] = Z80->sp & 0xFF;
     temp[1] = Z80->sp >> 8;
-
     ww(addr, temp);
-
     Z80->m = 5; Z80->t = 12;
 }
 
 void INC(char* r8){
     *r8 += 1;
     char temp = *r8;
-
     if(!temp) Z80->R->F |= Z;
     //if((temp & 0x0F) == 0) Z80->R->F |= H;
     Z80->R->F &= ~C;
     Z80->R->F &= ~S;
-
     Z80->m = 1; Z80->t = 4;
 }
 
 void INC_16(unsigned char* r16){
-
     unsigned short* pt = (unsigned short*)r16;
     *pt += 1;
     Z80->m = 2; Z80->t = 4;
@@ -100,18 +83,14 @@ void INC_16(unsigned char* r16){
 void DEC(char* r8){
     *r8 -= 1;
     char temp = *r8;
-
     Z80->R->F |= S;
-
     if(!temp) Z80->R->F |= Z;
     //if((temp & 0x0F) == 0) Z80->R->F |= H;
     Z80->R->F &= ~C;
-
     Z80->m = 1; Z80->t = 4;
 }
 
 void DEC_16(unsigned char* r16){
-
     unsigned short* pt = (unsigned short*)r16;
     *pt -= 1;
     Z80->m = 2; Z80->t = 4;
@@ -119,54 +98,43 @@ void DEC_16(unsigned char* r16){
 
 void ADD_hl_r16(unsigned short* r16){
     unsigned short temp = *r16;
-
     Z80->R->HL[0] = temp & 0xFF;
     Z80->R->HL[1] = (temp >> 8) & 0xFF;
-
     Z80->m = 2; Z80->t = 4;
 }
 
-void LD_r8_mm8(unsigned char* X, unsigned char imm8){
+void LD_r8_imm(unsigned char* X, unsigned char imm8){
     *X = imm8;
-
     Z80->m = 2; Z80->t = 8;
 }
 
 void RLCA(){
-
     unsigned char temp = Z80->R->A >> 7;
     Z80->R->A = (Z80->R->A << 1) | (Z80->R->A >> 7);
     if(! temp) Z80->R->F |= C;
-
     Z80->m = 1; Z80->t = 4;
 }
 
 void RRCA(){
-
     unsigned char temp = Z80->R->A << 7;
     Z80->R->A = (Z80->R->A >> 1) | (Z80->R->A << 7);
     if(! (temp >> 7)) Z80->R->F |= C;
-
     Z80->m = 1; Z80->t = 4;
 }
 
 void RLA(){
-
     if((Z80->R->F & C) == C){
         Z80->R->A = (Z80->R->A << 1) | 0x01 ;
-    }
-    else{
+    }else{
         Z80->R->A = (Z80->R->A << 1);
     }
     Z80->m = 1; Z80->t = 4;
 }
 
 void RRA(){
-
     if((Z80->R->F & C) == C){
         Z80->R->A = (Z80->R->A >> 1) | 0x80 ;
-    }
-    else{
+    }else{
         Z80->R->A = (Z80->R->A >> 1);
     }
     Z80->m = 1; Z80->t = 4;
@@ -180,7 +148,6 @@ void SCF(){
     Z80->R->F |= C;
     Z80->R->F &= ~S;
     Z80->R->F &= ~H;
-
     Z80->m = 1; Z80->t = 4;
 }
 
@@ -188,7 +155,6 @@ void CCF(){
     Z80->R->F = ~(Z80->R->F & C);
     Z80->R->F &= ~S;
     Z80->R->F &= ~H;
-
     Z80->m = 1; Z80->t = 4;
 }
 
@@ -196,52 +162,27 @@ void CPL(){
     Z80->R->A = ~Z80->R->A;
     Z80->R->F |= H;
     Z80->R->F |= S;
-
     Z80->m = 1; Z80->t = 4;
 }
 
 void JR(uint16_t addr){
-
     uint16_t offset = Z80->pc - addr;
-
     if ( (offset < 128) | (offset > -127)){
         Z80->pc += offset;
     }
-
     Z80->m = 3; Z80->t = 8;
 }
 
 void JR_C(char cond, uint16_t addr)
 {
-    if(cond == Z){
-        if((Z80->R->F & Z)== Z){
-            JR(addr);
-        }
-        else{
-            Z80->m = 2;
-        }
-    }else if(cond == ~Z){
-        if((Z80->R->F & Z) == N){
-            JR(addr);
-        }
-        else{
-            Z80->m = 2;
-        }
-    }else if(cond == C){
-        if((Z80->R->F & C) == C){
-            JR(addr);
-        }
-        else{
-            Z80->m = 2;
-        }
-    }
-    else if(cond==~C){
-        if((Z80->R->F & C) == N){
-            JR(addr);
-        }
-        else{
-            Z80->m = 2;
-        }
+    if((cond == Z) && ((Z80->R->F & Z) == Z)){
+        JR(addr);
+    }else if((cond == ~Z) && ((Z80->R->F & Z) == N)){
+        JR(addr);
+    }else if((cond == C) && ((Z80->R->F & C) == C)){
+        JR(addr);
+    }else if((cond==~C) && ((Z80->R->F & C) == N)){
+        JR(addr);
     }else{
         Z80->m = 2;
     }
@@ -266,98 +207,75 @@ void HALT(){
 void ADD_A_r8(unsigned char Y)
 {
     int temp = Z80->R->A + Y;
-
     Z80->R->A += Y;
-
     if(!Z80->R->A) Z80->R->F |= Z;
     if( temp > 255) Z80->R->F |= C;
-
     Z80->m = 1; Z80->t = 4;
 }
 
 void ADC_A_r8(unsigned char r8){
     int temp = Z80->R->A + r8;
-
     Z80->R->A += r8;
-
     if((Z80->R->F & C) == C){
         Z80->R->A += 1;
     }
-
     if(!Z80->R->A) Z80->R->F |= Z;
     if( temp > 255) Z80->R->F |= C;
-
     Z80->m = 1; Z80->t = 4;
 }
 
 void SUB_A_r8(unsigned char r8){
-
     if(r8 > Z80->R->A){
         Z80->R->F |= C;
     }
     Z80->R->F |= S;
-
     int temp = Z80->R->A - r8;
     if(!temp) Z80->R->F |= Z;
-
     Z80->R->A = (unsigned char)(temp & 0xFF);
     Z80->m = 1;
 }
 
 void SBC_A_r8(unsigned char r8){
-
     unsigned char carry = ((Z80->R->F & C) == C)? 1:0;
     if((r8 + carry) > Z80->R->A ){
         Z80->R->F |= C;
     }
-
     int temp = Z80->R->A - r8 - carry;
     if(!temp) Z80->R->F |= Z;
     Z80->R->F |= S;
-
     Z80->R->A = temp & 0xFF;
     Z80->m = 1;
 }
 
 void AND_A_r8(unsigned char r8){
-
     Z80->R->A &= r8;
-
     if(!Z80->R->A) Z80->R->F |= Z;
     Z80->R->F |= H;
-
     Z80->m = 1;
 }
 
 void XOR_A_r8(unsigned char r8){
-
     Z80->R->A ^= r8;
     if(!Z80->R->A) Z80->R->F |= Z;
-
     Z80->m = 1;
 }
 
 void OR_A_r8(unsigned char r8){
     Z80->R->A |= r8;
     if(!Z80->R->A) Z80->R->F |= Z;
-
     Z80->m = 1;
 }
 
-void CP_A_r8(unsigned char Y)
-{
+void CP_A_r8(unsigned char Y){
     int temp = Z80->R->A;
     temp -= Y;
     Z80->R->F |= 0x40;
-
     if(!(temp & 255)) Z80->R->F |= 0x80;
     if( temp < 0 ) Z80->R->F |= 0x10;
-
     Z80->m = 1; Z80->t = 4;
 }
 
-void PUSH_(char* X, char* Y)
-{
+void PUSH_(char* X, char* Y){
     Z80->sp--;
     wb(Z80->sp, *X);
     Z80->sp--;
@@ -365,141 +283,106 @@ void PUSH_(char* X, char* Y)
     Z80->m = 3; Z80->t = 12;
 }
 
-void POP_(char* X, char* Y)
-{
+void POP_(char* X, char* Y){
     *X = rb(Z80->sp);
     Z80->sp ++;
     *Y = rb(Z80->sp);
     Z80->sp ++;
-
     Z80->m = 3; Z80->t = 12;
 }
 
-void POP_r16(unsigned short* r16)
-{
+void POP_r16(unsigned short* r16){
     *r16 = rw(Z80->sp);
     Z80->sp += 2;
-
     Z80->m = 3;
 }
 
 // Block 3
 
-void ADD_A_imm(unsigned char Y)
-{
+void ADD_A_imm(unsigned char Y){
     int temp = Z80->R->A + Y;
-
     Z80->R->A += Y;
-
     if(!Z80->R->A) Z80->R->F |= Z;
     if( temp > 255) Z80->R->F |= C;
-
     Z80->m = 2; Z80->t = 4;
 }
 
 void ADC_A_imm(unsigned char r8){
     int temp = Z80->R->A + r8;
-
     Z80->R->A += r8;
-
     if((Z80->R->F & C) == C){
         Z80->R->A += 1;
     }
-
     if(!Z80->R->A) Z80->R->F |= Z;
     if( temp > 255) Z80->R->F |= C;
-
     Z80->m = 2; Z80->t = 4;
 }
 
 void SUB_A_imm(unsigned char r8){
-
     if(r8 > Z80->R->A){
         Z80->R->F |= C;
     }
     Z80->R->F |= S;
-
     int temp = Z80->R->A - r8;
     if(!temp) Z80->R->F |= Z;
-
     Z80->R->A = (unsigned char)(temp & 0xFF);
     Z80->m = 2;
 }
 
 void SBC_A_imm(unsigned char r8){
-
     unsigned char carry = ((Z80->R->F & C) == C)? 1:0;
     if((r8 + carry) > Z80->R->A ){
         Z80->R->F |= C;
     }
-
     int temp = Z80->R->A - r8 - carry;
     if(!temp) Z80->R->F |= Z;
     Z80->R->F |= S;
-
     Z80->R->A = temp & 0xFF;
     Z80->m = 2;
 }
 
 void AND_A_imm(unsigned char r8){
-
     Z80->R->A &= r8;
-
     if(!Z80->R->A) Z80->R->F |= Z;
     Z80->R->F |= H;
-
     Z80->m = 2;
 }
 
 void XOR_A_imm(unsigned char r8){
-
     Z80->R->A ^= r8;
     if(!Z80->R->A) Z80->R->F |= Z;
-
     Z80->m = 2;
 }
 
 void OR_A_imm(unsigned char r8){
     Z80->R->A |= r8;
     if(!Z80->R->A) Z80->R->F |= Z;
-
     Z80->m = 2;
 }
 
-void CP_A_imm(unsigned char Y)
-{
+void CP_A_imm(unsigned char Y){
     int temp = Z80->R->A;
     temp -= Y;
     Z80->R->F |= 0x40;
-
     if(!(temp & 255)) Z80->R->F |= 0x80;
     if( temp < 0 ) Z80->R->F |= 0x10;
-
     Z80->m = 2;
 }
 
-void RET()
-{
+void RET(){
     POP_r16(&(Z80->pc));
     Z80->m = 4;
 }
 
-void RET_C(char cond)
-{
-    if (cond > 0){
-        if( (Z80->R->F & cond) == cond){
-            POP_r16(&(Z80->pc));
-            Z80->m = 5;
-        }else{
-            Z80->m = 3;
-        }
+void RET_C(char cond){
+    if ((cond > 0) && ((Z80->R->F & cond) == cond)){
+        POP_r16(&(Z80->pc));
+        Z80->m = 5;
+    } else if ((cond < 0) && (Z80->R->F & cond) == N){
+        POP_r16(&(Z80->pc));
+        Z80->m = 5;
     }else{
-        if( (Z80->R->F & cond) == N){
-            POP_r16(&(Z80->pc));
-            Z80->m = 5;
-        }else{
-            Z80->m = 3;
-        }
+        Z80->m = 3;
     }
 }
 
@@ -514,8 +397,7 @@ void JP(unsigned short imm16)
     Z80->m = 4;
 }
 
-void JP_C(char cond, unsigned short imm16)
-{
+void JP_C(char cond, unsigned short imm16){
     if(cond > 0){
         if((Z80->R->F & cond) == cond){
             JP(imm16);
@@ -531,8 +413,7 @@ void JP_C(char cond, unsigned short imm16)
     }
 }
 
-void JP_HL()
-{
+void JP_HL(){
     unsigned short* temp = (unsigned short*)Z80->R->HL;
     Z80->pc = *temp;
     Z80->m = 1;
@@ -546,4 +427,15 @@ void CALL(unsigned short imm16)
 void CALL_C(char cond, unsigned short imm16)
 {
 
+}
+
+void decode8(unsigned char opcode){
+    switch (opcode)
+    {
+    case 0x00:
+        NOP_();
+        break;
+    default:
+        break;
+    }
 }

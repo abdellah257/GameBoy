@@ -6,8 +6,9 @@
 #include <screen.h>
 #include <memoryUnit.h>
 
-static const int screenWidth = 160;
-static const int screenHeight = 144;
+static const int scale = 4;
+static const int screenWidth = scale*160;     // 160  16x16 tiles
+static const int screenHeight = scale*144;    // 144 
 
 int main()
 {
@@ -25,7 +26,7 @@ int main()
     {
         BeginDrawing();
         ClearBackground(BLACK);
-        DrawText("Welcome to GameBoy !", 30, 70, 5, LIGHTGRAY);
+        DrawText("Welcome to GameBoy !", scale*50, scale*70, scale*6, LIGHTGRAY);
         for (int x = 0; x < screenWidth; x++)
         {
             for (int y = 0; y < screenHeight; y++)

@@ -4,9 +4,9 @@
         "name": "Run GameBoy",
         "type": "cppdbg",
         "request": "launch",
-        "program": "/home/abdellah257/workspace/GameBoy/build/GameBoy.exe",
+        "program": "${workspaceFolder}/build/GameBoy.exe",
         "args": [],
-        "stopAtEntry": false,
+        "stopAtEntry": true,
         "cwd": "${workspaceFolder}",
         "environment": [
             {
@@ -31,8 +31,7 @@
                 "text": "-gdb-set disassembly-flavor intel",
                 "ignoreFailures": true
             }
-        ],
-        "preLaunchTask": "Build GameBoy",
+        ]
     }
     ]
 }

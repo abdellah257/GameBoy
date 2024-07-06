@@ -41,7 +41,7 @@ void INC_16(unsigned char* r16);
 void DEC_16(unsigned char* r16);
 void ADD_hl_r16(unsigned short* r16);
 
-void LD_r8_mm8(unsigned char* X, unsigned char imm8);
+void LD_r8_imm(unsigned char* X, unsigned char imm8);
 
 void RLCA();
 void RRCA();
@@ -95,6 +95,17 @@ void RST(char target[3]);
 void PUSH_(char* X, char* Y);
 void POP_(char* X, char* Y);
 
+// CB block instructions
+void RLC(unsigned char r8);
+void RRC(unsigned char r8);
+void RL(unsigned char r8);
+void RR(unsigned char r8);
+void SLA(unsigned char r8);
+void SRA(unsigned char r8);
+void SWAP(unsigned char r8);
+void SRL(unsigned char r8);
 
+// Decode 8-bit instructions
+void decode8(unsigned char opcode);
 
 #endif
