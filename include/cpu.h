@@ -9,10 +9,8 @@ typedef struct CPU {
     /* data */
     struct Registers* R;                    // Registers
 
-    unsigned short pc;                      // Program Counter  
-    unsigned short sp;                      // Stack Pointer
-    unsigned char m;                        // CPU M-Cycles
-    unsigned char t;                        // CPU T-Cycles
+    uint8_t m;                        // CPU M-Cycles
+    uint8_t t;                        // CPU T-Cycles
 
 } CPU;
 
@@ -28,20 +26,20 @@ void resetCPU();
 
 void NOP_();
 
-void LD_imm(unsigned char* r16, unsigned short imm16);
-void LD_mm_A(unsigned short addr);
-void LD_A_mm(unsigned short addr);
-void LD_mm_sp(unsigned short imm16);
-void LD_sp_imm(unsigned short imm16);
+void LD_r16_imm(uint16_t* r16, uint16_t imm16);
+void LD_mem_A(uint16_t addr);
+void LD_A_mem(uint16_t addr);
+void LD_mem_sp(uint16_t imm16);
+void LD_sp_imm(uint16_t imm16);
 
-void INC(char* r8);
-void DEC(char* r8);
+void INC_8(uint8_t* r8);
+void DEC_8(uint8_t* r8);
 
-void INC_16(unsigned char* r16);
-void DEC_16(unsigned char* r16);
-void ADD_hl_r16(unsigned short* r16);
+void INC_16(uint16_t* r16);
+void DEC_16(uint16_t* r16);
+void ADD_HL_r16(uint16_t* r16);
 
-void LD_r8_imm(unsigned char* X, unsigned char imm8);
+void LD_r8_imm(uint8_t* X, uint8_t imm8);
 
 void RLCA();
 void RRCA();
@@ -58,54 +56,68 @@ void JR_C(char cond, uint16_t addr);
 void STOP();
 
 // Block 1: 8-bit r to r loads
-void LD_(unsigned char* X, unsigned char* Y);
+void LD_r8_r8(uint8_t* X, uint8_t* Y);
 void HALT();
 
 // Block 2: 8-bit arithmetic 
-void ADD_A_r8(unsigned char r8);
-void ADC_A_r8(unsigned char r8);
-void SUB_A_r8(unsigned char r8);
-void SBC_A_r8(unsigned char r8);
-void AND_A_r8(unsigned char r8);
-void XOR_A_r8(unsigned char r8);
-void OR_A_r8(unsigned char r8);
-void CP_A_r8(unsigned char r8);
+void ADD_A_r8(uint8_t r8);
+void ADC_A_r8(uint8_t r8);
+void SUB_A_r8(uint8_t r8);
+void SBC_A_r8(uint8_t r8);
+void AND_A_r8(uint8_t r8);
+void XOR_A_r8(uint8_t r8);
+void OR_A_r8(uint8_t r8);
+void CP_A_r8(uint8_t r8);
 
 // Block 3
 
-void ADD_A_imm(unsigned char r8);
-void ADC_A_imm(unsigned char r8);
-void SUB_A_imm(unsigned char r8);
-void SBC_A_imm(unsigned char r8);
-void AND_A_imm(unsigned char r8);
-void XOR_A_imm(unsigned char r8);
-void OR_A_imm(unsigned char r8);
-void CP_A_imm(unsigned char r8);
+void ADD_A_imm(uint8_t imm);
+void ADC_A_imm(uint8_t imm);
+void SUB_A_imm(uint8_t imm);
+void SBC_A_imm(uint8_t imm);
+void AND_A_imm(uint8_t imm);
+void XOR_A_imm(uint8_t imm);
+void OR_A_imm(uint8_t imm);
+void CP_A_imm(uint8_t imm);
 
 void RET();
 void RETI();
 void RET_C(char cond);
-void JP(unsigned short imm16);
-void JP_C(char cond, unsigned short imm16);
+void JP(uint16_t imm16);
+void JP_C(char cond, uint16_t imm16);
 void JP_HL();
-void CALL(unsigned short imm16);
-void CALL_C(char cond, unsigned short imm16);
+void CALL(uint16_t imm16);
+void CALL_C(char cond, uint16_t imm16);
 void RST(char target[3]);
 
-void PUSH_(char* X, char* Y);
-void POP_(char* X, char* Y);
+void PUSH_(uint16_t *r16);
+void POP_(uint16_t *r16);
+
+void LDH_C_A();
+void LDH_imm_A(uint8_t imm8);
+void LD_addr_A(uint16_t addr);
+void LDH_A_C();
+void LDH_A_imm(uint8_t imm8);
+void LD_A_addr(uint16_t addr);
+
+void ADD_sp_imm(uint8_t imm8);
+void LD_HL_sp_imm(uint8_t imm8);
+void LD_sp_HL();
+
+void DI();
+void EI();
 
 // CB block instructions
-void RLC(unsigned char r8);
-void RRC(unsigned char r8);
-void RL(unsigned char r8);
-void RR(unsigned char r8);
-void SLA(unsigned char r8);
-void SRA(unsigned char r8);
-void SWAP(unsigned char r8);
-void SRL(unsigned char r8);
+void RLC(uint8_t r8);
+void RRC(uint8_t r8);
+void RL(uint8_t r8);
+void RR(uint8_t r8);
+void SLA(uint8_t r8);
+void SRA(uint8_t r8);
+void SWAP(uint8_t r8);
+void SRL(uint8_t r8);
 
 // Decode 8-bit instructions
-void decode8(unsigned char opcode);
+void decode8(uint8_t opcode, uint8_t nextByte, uint16_t nextWord);
 
 #endif

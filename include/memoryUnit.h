@@ -41,9 +41,9 @@ char rb(uint16_t addr);
 short rw(uint16_t addr);
 
 // Write 8 bit data
-void wb(uint16_t addr, unsigned char val);
+void wb(uint16_t addr, uint8_t val);
 
 // Write 16 bit data
-void ww(uint16_t addr, unsigned char val[2]);
+void ww(uint16_t addr, uint16_t val);
 
 #endif

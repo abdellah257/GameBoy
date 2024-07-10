@@ -49,7 +49,7 @@ char rb(uint16_t addr)
             {
                 return MMU->bios[addr];
             }
-            else if (Z80->sp == 0x100)
+            else if (Z80->R->SP == 0x100)
             {
                 MMU->inbios = true;
             }
@@ -122,7 +122,7 @@ short rw(uint16_t addr)
     return rb(addr) + (rb(addr + 1) << 8);
 }
 
-void wb(uint16_t addr, unsigned char val)
+void wb(uint16_t addr, uint8_t val)
 {
 
     switch (addr & 0xF000)
@@ -182,8 +182,8 @@ void wb(uint16_t addr, unsigned char val)
     }
 }
 
-void ww(uint16_t add, unsigned char val[2])
+void ww(uint16_t add, uint16_t val)
 {
-    wb(add, val[0]);
-    wb(add + 1, val[1]);
+    wb(add, val & 0xFF);
+    wb(add + 1, (val >> 8) & 0xFF);
 }
