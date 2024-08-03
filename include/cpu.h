@@ -15,6 +15,14 @@ typedef struct CPU {
 } CPU;
 
 extern CPU *Z80;
+
+enum cond{
+    NZ,
+    Z,
+    NC,
+    C
+};
+
 /* Initialize the CPU */
 CPU* initCPU();
 
@@ -51,7 +59,7 @@ void SCF();
 void CCF();
 
 void JR(uint16_t addr);
-void JR_C(char cond, uint16_t addr);
+void JR_C(enum cond c, uint16_t addr);
 
 void STOP();
 
@@ -82,12 +90,12 @@ void CP_A_imm(uint8_t imm);
 
 void RET();
 void RETI();
-void RET_C(char cond);
+void RET_C(enum cond c);
 void JP(uint16_t imm16);
-void JP_C(char cond, uint16_t imm16);
+void JP_C(enum cond c, uint16_t imm16);
 void JP_HL();
 void CALL(uint16_t imm16);
-void CALL_C(char cond, uint16_t imm16);
+void CALL_C(enum cond c, uint16_t imm16);
 void RST(char target[3]);
 
 void PUSH_(uint16_t *r16);
@@ -119,5 +127,6 @@ void SRL(uint8_t r8);
 
 // Decode 8-bit instructions
 void decode8(uint8_t opcode, uint8_t nextByte, uint16_t nextWord);
+void decodeCB(uint8_t opcode, uint8_t nextByte, uint16_t nextWord);
 
 #endif
