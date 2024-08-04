@@ -6,116 +6,68 @@
 
 CPU *Z80;
 
-CPU* initCPU()
-{
+CPU* initCPU(){
     CPU* p = malloc(sizeof(CPU));
     p->R = initRegs();
     p->m = 0;
     p->t = 0;
     return p;
 }
-
-void resetCPU()
-{
+void resetCPU(){
     resetRegs(Z80->R);
     Z80->m = 0; Z80->t = 0;
 }
 
 /* Instructions */
 
-// Block 0
-
-void NOP_(){
-    Z80->m = 1; Z80->t = 4;
+// Load Instructions
+void LD_r8_imm(uint8_t* X, uint8_t imm8){
+    *X = imm8;
+    Z80->m = 2; Z80->t = 8;
 }
-
+void LD_r8_r8(uint8_t* X, uint8_t* Y){
+    /* LD X Y  load Y(copy) on X */
+    uint8_t temp = *Y;
+    *X = temp;
+    Z80->m = 1;
+}
 void LD_r16_imm(uint16_t *r16, uint16_t imm16){
     uint16_t temp = imm16;
     r16[0] = temp & 0xFF;
     r16[1] = (temp >> 8) & 0xFF;
     Z80->m = 3; Z80->t = 12;
 }
-
 void LD_mem_A(uint16_t addr){
     char val = Z80->R->A;
-    wb(addr, val);    
+    wb(addr, val);
+    Z80->m = 2; Z80->t = 4;
 }
-
 void LD_A_mem(uint16_t addr){
+    // addr comes from r16 registers
     uint8_t val = rb(addr);
     Z80->R->A = val;
     Z80->m = 2; Z80->t = 4;
 }
+void LDH_C_A(){}
+void LDH_A_C(){}
+void LDH_imm_A(uint8_t imm8){}
+void LD_addr_A(uint16_t addr){}
+void LDH_A_imm(uint8_t imm8){}
+void LD_A_addr(uint16_t addr){}
 
-void LD_mem_sp(uint16_t addr){
-    uint8_t temp[2];
-    temp[0] = Z80->R->SP & 0xFF;
-    temp[1] = Z80->R->SP >> 8;
-    ww(addr, temp);
-    Z80->m = 5; Z80->t = 12;
-}
-
-void LD_sp_imm(uint16_t imm16){
-    Z80->R->SP = imm16;
-    Z80->m = 3; Z80->t = 12;
-}
-
-void INC_8(uint8_t* r8){
-    *r8 += 1;
-    char temp = *r8;
-    if(!temp) Z80->R->F |= FZ;
-    //if((temp & 0x0F) == 0) Z80->R->F |= FH;
-    Z80->R->F &= ~FC;
-    Z80->R->F &= ~FS;
-    Z80->m = 1; Z80->t = 4;
-}
-
-void INC_16(uint16_t *r16){
-    uint16_t* pt = (uint16_t*)r16;
-    *pt += 1;
-    Z80->m = 2; Z80->t = 4;
-}
-
-void DEC_8(uint8_t *r8){
-    *r8 -= 1;
-    char temp = *r8;
-    Z80->R->F |= FS;
-    if(!temp) Z80->R->F |= FZ;
-    //if((temp & 0x0F) == 0) Z80->R->F |= FH;
-    Z80->R->F &= ~FC;
-    Z80->m = 1; Z80->t = 4;
-}
-
-void DEC_16(uint16_t *r16){
-    uint16_t* pt = (uint16_t*)r16;
-    *pt -= 1;
-    Z80->m = 2; Z80->t = 4;
-}
-
-void ADD_HL_r16(uint16_t* r16){
-    // TODO 
-    Z80->m = 2; Z80->t = 4;
-}
-
-void LD_r8_imm(uint8_t* X, uint8_t imm8){
-    *X = imm8;
-    Z80->m = 2; Z80->t = 8;
-}
-
+// Bit Shift Instructions
 void RLCA(){
     uint8_t temp = Z80->R->A >> 7;
     Z80->R->A = (Z80->R->A << 1) | (Z80->R->A >> 7);
     if(! temp) Z80->R->F |= FC;
     Z80->m = 1; Z80->t = 4;
 }
-
 void RRCA(){
     uint8_t temp = Z80->R->A << 7;
     Z80->R->A = (Z80->R->A >> 1) | (Z80->R->A << 7);
     if(! (temp >> 7)) Z80->R->F |= FC;
     Z80->m = 1; Z80->t = 4;
 }
-
 void RLA(){
     if((Z80->R->F & FC) == FC){
         Z80->R->A = (Z80->R->A << 1) | 0x01 ;
@@ -124,7 +76,6 @@ void RLA(){
     }
     Z80->m = 1; Z80->t = 4;
 }
-
 void RRA(){
     if((Z80->R->F & FC) == FC){
         Z80->R->A = (Z80->R->A >> 1) | 0x80 ;
@@ -134,69 +85,7 @@ void RRA(){
     Z80->m = 1; Z80->t = 4;
 }
 
-void DAA(){
-
-}
-
-void SCF(){
-    Z80->R->F |= FC;
-    Z80->R->F &= ~FS;
-    Z80->R->F &= ~FH;
-    Z80->m = 1; Z80->t = 4;
-}
-
-void CCF(){
-    Z80->R->F = ~(Z80->R->F & FC);
-    Z80->R->F &= ~FS;
-    Z80->R->F &= ~FH;
-    Z80->m = 1; Z80->t = 4;
-}
-
-void CPL(){
-    Z80->R->A = ~Z80->R->A;
-    Z80->R->F |= FH;
-    Z80->R->F |= FS;
-    Z80->m = 1; Z80->t = 4;
-}
-
-void JR(uint16_t addr){
-    uint16_t offset = Z80->R->PC - addr;
-    if ( (offset < 128) | (offset > -127)){
-        Z80->R->PC += offset;
-    }
-    Z80->m = 3; Z80->t = 8;
-}
-
-void JR_C(enum cond c, uint16_t addr)
-{
-    if((c == Z) && ((Z80->R->F & FZ) == FZ)){
-        JR(addr);
-    }else if((c == NZ) && ((Z80->R->F & FZ) == FN)){
-        JR(addr);
-    }else if((c == C) && ((Z80->R->F & FC) == FC)){
-        JR(addr);
-    }else if((c== NC) && ((Z80->R->F & FC) == FN)){
-        JR(addr);
-    }else{
-        Z80->m = 2;
-    }
-}
-
-// Block 1
-
-void LD_r8_r8(uint8_t* X, uint8_t* Y){
-    /* LD X Y  load Y(copy) on X */
-    uint8_t temp = *Y;
-    *X = temp;
-    Z80->m = 1;
-}
-
-void HALT(){
-    // More complicated
-    // Leave for later 
-}
-
-// Block 2
+// Arithmetic Instructions
 
 void ADD_A_r8(uint8_t Y)
 {
@@ -206,7 +95,13 @@ void ADD_A_r8(uint8_t Y)
     if( temp > 255) Z80->R->F |= FC;
     Z80->m = 1; Z80->t = 4;
 }
-
+void ADD_A_imm(uint8_t Y){
+    int temp = Z80->R->A + Y;
+    Z80->R->A += Y;
+    if(!Z80->R->A) Z80->R->F |= FZ;
+    if( temp > 255) Z80->R->F |= FC;
+    Z80->m = 2; Z80->t = 4;
+}
 void ADC_A_r8(uint8_t r8){
     int temp = Z80->R->A + r8;
     Z80->R->A += r8;
@@ -217,7 +112,16 @@ void ADC_A_r8(uint8_t r8){
     if( temp > 255) Z80->R->F |= FC;
     Z80->m = 1; Z80->t = 4;
 }
-
+void ADC_A_imm(uint8_t r8){
+    int temp = Z80->R->A + r8;
+    Z80->R->A += r8;
+    if((Z80->R->F & FC) == FC){
+        Z80->R->A += 1;
+    }
+    if(!Z80->R->A) Z80->R->F |= FZ;
+    if( temp > 255) Z80->R->F |= FC;
+    Z80->m = 2; Z80->t = 4;
+}
 void SUB_A_r8(uint8_t r8){
     if(r8 > Z80->R->A){
         Z80->R->F |= FC;
@@ -228,7 +132,16 @@ void SUB_A_r8(uint8_t r8){
     Z80->R->A = (uint8_t)(temp & 0xFF);
     Z80->m = 1;
 }
-
+void SUB_A_imm(uint8_t r8){
+    if(r8 > Z80->R->A){
+        Z80->R->F |= FC;
+    }
+    Z80->R->F |= FS;
+    int temp = Z80->R->A - r8;
+    if(!temp) Z80->R->F |= FZ;
+    Z80->R->A = (uint8_t)(temp & 0xFF);
+    Z80->m = 2;
+}
 void SBC_A_r8(uint8_t r8){
     uint8_t carry = ((Z80->R->F & FC) == FC)? 1:0;
     if((r8 + carry) > Z80->R->A ){
@@ -240,67 +153,6 @@ void SBC_A_r8(uint8_t r8){
     Z80->R->A = temp & 0xFF;
     Z80->m = 1;
 }
-
-void AND_A_r8(uint8_t r8){
-    Z80->R->A &= r8;
-    if(!Z80->R->A) Z80->R->F |= FZ;
-    Z80->R->F |= FH;
-    Z80->m = 1;
-}
-
-void XOR_A_r8(uint8_t r8){
-    Z80->R->A ^= r8;
-    if(!Z80->R->A) Z80->R->F |= FZ;
-    Z80->m = 1;
-}
-
-void OR_A_r8(uint8_t r8){
-    Z80->R->A |= r8;
-    if(!Z80->R->A) Z80->R->F |= FZ;
-    Z80->m = 1;
-}
-
-void CP_A_r8(uint8_t Y){
-    int temp = Z80->R->A;
-    temp -= Y;
-    Z80->R->F |= 0x40;
-    if(!(temp & 255)) Z80->R->F |= 0x80;
-    if( temp < 0 ) Z80->R->F |= 0x10;
-    Z80->m = 1; Z80->t = 4;
-}
-
-// Block 3
-
-void ADD_A_imm(uint8_t Y){
-    int temp = Z80->R->A + Y;
-    Z80->R->A += Y;
-    if(!Z80->R->A) Z80->R->F |= FZ;
-    if( temp > 255) Z80->R->F |= FC;
-    Z80->m = 2; Z80->t = 4;
-}
-
-void ADC_A_imm(uint8_t r8){
-    int temp = Z80->R->A + r8;
-    Z80->R->A += r8;
-    if((Z80->R->F & FC) == FC){
-        Z80->R->A += 1;
-    }
-    if(!Z80->R->A) Z80->R->F |= FZ;
-    if( temp > 255) Z80->R->F |= FC;
-    Z80->m = 2; Z80->t = 4;
-}
-
-void SUB_A_imm(uint8_t r8){
-    if(r8 > Z80->R->A){
-        Z80->R->F |= FC;
-    }
-    Z80->R->F |= FS;
-    int temp = Z80->R->A - r8;
-    if(!temp) Z80->R->F |= FZ;
-    Z80->R->A = (uint8_t)(temp & 0xFF);
-    Z80->m = 2;
-}
-
 void SBC_A_imm(uint8_t r8){
     uint8_t carry = ((Z80->R->F & FC) == FC)? 1:0;
     if((r8 + carry) > Z80->R->A ){
@@ -312,26 +164,46 @@ void SBC_A_imm(uint8_t r8){
     Z80->R->A = temp & 0xFF;
     Z80->m = 2;
 }
-
+void AND_A_r8(uint8_t r8){
+    Z80->R->A &= r8;
+    if(!Z80->R->A) Z80->R->F |= FZ;
+    Z80->R->F |= FH;
+    Z80->m = 1;
+}
 void AND_A_imm(uint8_t r8){
     Z80->R->A &= r8;
     if(!Z80->R->A) Z80->R->F |= FZ;
     Z80->R->F |= FH;
     Z80->m = 2;
 }
-
+void XOR_A_r8(uint8_t r8){
+    Z80->R->A ^= r8;
+    if(!Z80->R->A) Z80->R->F |= FZ;
+    Z80->m = 1;
+}
 void XOR_A_imm(uint8_t r8){
     Z80->R->A ^= r8;
     if(!Z80->R->A) Z80->R->F |= FZ;
     Z80->m = 2;
 }
-
+void OR_A_r8(uint8_t r8){
+    Z80->R->A |= r8;
+    if(!Z80->R->A) Z80->R->F |= FZ;
+    Z80->m = 1;
+}
 void OR_A_imm(uint8_t r8){
     Z80->R->A |= r8;
     if(!Z80->R->A) Z80->R->F |= FZ;
     Z80->m = 2;
 }
-
+void CP_A_r8(uint8_t Y){
+    int temp = Z80->R->A;
+    temp -= Y;
+    Z80->R->F |= 0x40;
+    if(!(temp & 255)) Z80->R->F |= 0x80;
+    if( temp < 0 ) Z80->R->F |= 0x10;
+    Z80->m = 1; Z80->t = 4;
+}
 void CP_A_imm(uint8_t Y){
     int temp = Z80->R->A;
     temp -= Y;
@@ -340,36 +212,45 @@ void CP_A_imm(uint8_t Y){
     if( temp < 0 ) Z80->R->F |= 0x10;
     Z80->m = 2;
 }
-
-void RET(){
-    POP_(&(Z80->R->PC));
-    Z80->m = 4;
+void INC_8(uint8_t* r8){
+    *r8 += 1;
+    char temp = *r8;
+    if(!temp) Z80->R->F |= FZ;
+    //if((temp & 0x0F) == 0) Z80->R->F |= FH;
+    Z80->R->F &= ~FC;
+    Z80->R->F &= ~FS;
+    Z80->m = 1; Z80->t = 4;
+}
+void INC_16(uint16_t *r16){
+    uint16_t* pt = (uint16_t*)r16;
+    *pt += 1;
+    Z80->m = 2; Z80->t = 4;
+}
+void DEC_8(uint8_t *r8){
+    *r8 -= 1;
+    char temp = *r8;
+    Z80->R->F |= FS;
+    if(!temp) Z80->R->F |= FZ;
+    //if((temp & 0x0F) == 0) Z80->R->F |= FH;
+    Z80->R->F &= ~FC;
+    Z80->m = 1; Z80->t = 4;
+}
+void DEC_16(uint16_t *r16){
+    uint16_t* pt = (uint16_t*)r16;
+    *pt -= 1;
+    Z80->m = 2; Z80->t = 4;
+}
+void ADD_HL_r16(uint16_t* r16){
+    // TODO 
+    Z80->m = 2; Z80->t = 4;
 }
 
-void RET_C(enum cond c){
-    // Deprecated
-    if ((c > 0) && ((Z80->R->F & c) == c)){
-        POP_(&(Z80->R->PC));
-        Z80->m = 5;
-    } else if ((c < 0) && (Z80->R->F & c) == FN){
-        POP_(&(Z80->R->PC));
-        Z80->m = 5;
-    }else{
-        Z80->m = 3;
-    }
-}
+// Jumps & Subroutine instructions
 
-void RETI()
-{
-
-}
-
-void JP(uint16_t imm16)
-{
+void JP(uint16_t imm16){
     Z80->R->PC = imm16;
     Z80->m = 4;
 }
-
 void JP_C(enum cond c, uint16_t imm16){
     // deprecated
     if(c > 0){
@@ -386,73 +267,113 @@ void JP_C(enum cond c, uint16_t imm16){
         }
     }
 }
-
 void JP_HL(){
     uint16_t* temp = (uint16_t*)Z80->R->HL;
     Z80->R->PC = *temp;
     Z80->m = 1;
 }
-
-void CALL(uint16_t imm16)
+void JR(uint16_t addr){
+    uint16_t offset = Z80->R->PC - addr;
+    if ( (offset < 128) | (offset > -127)){
+        Z80->R->PC += offset;
+    }
+    Z80->m = 3; Z80->t = 8;
+}
+void JR_C(enum cond c, uint16_t addr)
 {
-    
+    if((c == Z) && ((Z80->R->F & FZ) == FZ)){
+        JR(addr);
+    }else if((c == NZ) && ((Z80->R->F & FZ) == FN)){
+        JR(addr);
+    }else if((c == C) && ((Z80->R->F & FC) == FC)){
+        JR(addr);
+    }else if((c== NC) && ((Z80->R->F & FC) == FN)){
+        JR(addr);
+    }else{
+        Z80->m = 2;
+    }
+}
+void CALL(uint16_t imm16){}
+void CALL_C(enum cond c, uint16_t imm16){}
+void RST(char target[3]){}
+void RET(){
+    POP_(&(Z80->R->PC));
+    Z80->m = 4;
+}
+void RET_C(enum cond c){
+    // Deprecated
+    if ((c > 0) && ((Z80->R->F & c) == c)){
+        POP_(&(Z80->R->PC));
+        Z80->m = 5;
+    } else if ((c < 0) && (Z80->R->F & c) == FN){
+        POP_(&(Z80->R->PC));
+        Z80->m = 5;
+    }else{
+        Z80->m = 3;
+    }
+}
+void RETI()
+{
+
 }
 
-void CALL_C(enum cond c, uint16_t imm16)
-{
+// Stack instructions
 
+void LD_mem_sp(uint16_t addr){
+    uint8_t temp[2];
+    temp[0] = Z80->R->SP & 0xFF;
+    temp[1] = Z80->R->SP >> 8;
+    ww(addr, temp);
+    Z80->m = 5; Z80->t = 12;
 }
-void RST(char target[3])
-{
-
+void LD_sp_imm(uint16_t imm16){
+    Z80->R->SP = imm16;
+    Z80->m = 3; Z80->t = 12;
 }
-
 void PUSH_(uint16_t *r16){
     Z80->R->SP=-2;
     ww(Z80->R->SP, *r16);
     Z80->m = 3; Z80->t = 12;
 }
-
 void POP_(uint16_t *r16){
     *r16 = rw(Z80->R->SP);
     Z80->R->SP += 2;
     Z80->m = 3; Z80->t = 12;
 }
-
-void LDH_C_A(){
-    // TODO
-}
-
-void LDH_A_C(){
-    // TODO
-}
-
-void LDH_imm_A(uint8_t imm8){
-    // TODO
-}
-
-void LD_addr_A(uint16_t addr){
-    // TODO
-}
-
-void LDH_A_imm(uint8_t imm8){
-    // TODO
-}
-
-void LD_A_addr(uint16_t addr){
-    // TODO
-}
-
-void STOP(){
-    // TODO
-}
-
 void ADD_sp_imm(uint8_t imm8){}
 void LD_HL_sp_imm(uint8_t imm8){}
 void LD_sp_HL(){}
 
+// Miscalaneous Instructions
+
+void NOP_(){
+    Z80->m = 1; Z80->t = 4;
+}
+void DAA(){
+
+}
+void SCF(){
+    Z80->R->F |= FC;
+    Z80->R->F &= ~FS;
+    Z80->R->F &= ~FH;
+    Z80->m = 1; Z80->t = 4;
+}
+void CCF(){
+    Z80->R->F = ~(Z80->R->F & FC);
+    Z80->R->F &= ~FS;
+    Z80->R->F &= ~FH;
+    Z80->m = 1; Z80->t = 4;
+}
+void CPL(){
+    Z80->R->A = ~Z80->R->A;
+    Z80->R->F |= FH;
+    Z80->R->F |= FS;
+    Z80->m = 1; Z80->t = 4;
+}
+void HALT(){}
 void DI(){}
 void EI(){}
+void STOP(){}
 
 // CB block instructions
 void RLC(uint8_t r8){}

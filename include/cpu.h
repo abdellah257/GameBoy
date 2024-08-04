@@ -34,7 +34,9 @@ void resetCPU();
 
 void NOP_();
 
+/* Load 16-bit immediate value on 16-bit register */
 void LD_r16_imm(uint16_t* r16, uint16_t imm16);
+/* Load value from A into memory[addr] */
 void LD_mem_A(uint16_t addr);
 void LD_A_mem(uint16_t addr);
 void LD_mem_sp(uint16_t imm16);
