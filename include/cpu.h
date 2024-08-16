@@ -110,7 +110,7 @@ void LDH_A_C();
 void LDH_A_imm(uint8_t imm8);
 void LD_A_addr(uint16_t addr);
 
-void ADD_sp_imm(uint8_t imm8);
+void ADD_sp_imm(int8_t imm8);
 void LD_HL_sp_imm(uint8_t imm8);
 void LD_sp_HL();
 
@@ -118,14 +118,14 @@ void DI();
 void EI();
 
 // CB block instructions
-void RLC(uint8_t r8);
-void RRC(uint8_t r8);
-void RL(uint8_t r8);
-void RR(uint8_t r8);
-void SLA(uint8_t r8);
-void SRA(uint8_t r8);
-void SWAP(uint8_t r8);
-void SRL(uint8_t r8);
+void RLC(uint8_t* r8);
+void RRC(uint8_t* r8);
+void RL(uint8_t* r8);
+void RR(uint8_t* r8);
+void SLA(uint8_t* r8);
+void SRA(uint8_t* r8);
+void SWAP(uint8_t* r8);
+void SRL(uint8_t* r8);
 
 // Decode 8-bit instructions
 void decode8(uint8_t opcode, uint8_t nextByte, uint16_t nextWord);
