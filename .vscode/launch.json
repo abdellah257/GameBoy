@@ -8,16 +8,16 @@
         "args": [],
         "stopAtEntry": true,
         "cwd": "${workspaceFolder}",
-        "environment": [
-            {
-                "name": "GAMEBOY",
-                "value": "${workspaceFolder}"
-            },
-            {
-                "name": "LD_LIBRARY_PATH",
-                "value": "$GAMEBOY/packages/raylib-5.0/lib:$LD_LIBRARY_PATH"
-            }
-        ],
+        // "environment": [
+        //     {
+        //         "name": "GAMEBOY",
+        //         "value": "${workspaceFolder}"
+        //     },
+        //     {
+        //         "name": "LD_LIBRARY_PATH",
+        //         "value": "$GAMEBOY/packages/raylib-5.0/lib:$LD_LIBRARY_PATH"
+        //     }
+        // ],
         "externalConsole": false,
         "MIMode": "gdb",
         "setupCommands": [
@@ -31,7 +31,8 @@
                 "text": "-gdb-set disassembly-flavor intel",
                 "ignoreFailures": true
             }
-        ]
+        ],
+        "preLaunchTask": "Build GameBoy"
     }
     ]
 }

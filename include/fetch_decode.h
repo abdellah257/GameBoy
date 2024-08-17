@@ -6,6 +6,8 @@
 
 void read_ROM(char *filename);
 
-void decode_instructions(uint16_t pc);
+void execute_instruction(uint16_t pc);
+
+uint8_t hex2int(char ch);
 
 #endif

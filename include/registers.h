@@ -28,6 +28,7 @@ typedef struct Registers
     uint16_t SP;
     uint16_t PC;
 
+    uint8_t m;
 } Registers;
 
 /* Initialize registers */
