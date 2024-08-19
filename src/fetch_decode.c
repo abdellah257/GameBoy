@@ -1,35 +1,44 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <fetch_decode.h>
 #include <memoryUnit.h>
 #include <cpu.h>
 
-uint8_t hex2int(char ch)
-{
-    if (ch >= '0' && ch <= '9')
-        return ch - '0';
-    if (ch >= 'A' && ch <= 'F')
-        return ch - 'A' + 10;
-    if (ch >= 'a' && ch <= 'f')
-        return ch - 'a' + 10;
-    return -1;
+uint8_t ascii_to_hex(char c){
+    uint8_t num = (uint8_t) c;
+    if(num < 58 && num > 47)
+    {
+        return num - 48; 
+    }
+    if(num < 71 && num > 64)
+    {
+        return num - 55;
+    }
+    return num;
 }
+
 void read_ROM(char *filename){
     FILE *rom = fopen(filename, "rb");
     if (rom == NULL){
         printf("Error opening %s\n", filename);
         exit(1);
     }
-    for (int i = 0; i < 256; i++){
-        char temp = 0;
-        char val = 0;
-        fread(&temp, 1, 1, rom);
-        val = temp >> 4;
-        fread(&temp, 1, 1, rom);
-        val |= temp;
-        MMU->bios[i] = val;
+    uint8_t sum;
+    unsigned char c;
+    int i = 1; int counter = 0;
+    while (counter < 256 && !feof(rom)) {
+        c = fgetc(rom);
+        if (c == '\n') continue;
+        if (i == 1) {
+            sum = ascii_to_hex(c) << 4;
+            i = 2;
+        } else {
+            sum = sum | ascii_to_hex(c);
+            MMU->bios[counter] = sum;
+            counter ++;
+            i = 1;
+        }
     }
-    
-    // fread(MMU->rom, 32512, 1, rom); 
     fclose(rom);
 }
 

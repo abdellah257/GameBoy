@@ -5,19 +5,19 @@
         "type": "cppdbg",
         "request": "launch",
         "program": "${workspaceFolder}/build/GameBoy.exe",
-        "args": [],
+        "args": ["${workspaceFolder}/tests/roms/test0.hex"],
         "stopAtEntry": true,
         "cwd": "${workspaceFolder}",
-        // "environment": [
-        //     {
-        //         "name": "GAMEBOY",
-        //         "value": "${workspaceFolder}"
-        //     },
-        //     {
-        //         "name": "LD_LIBRARY_PATH",
-        //         "value": "$GAMEBOY/packages/raylib-5.0/lib:$LD_LIBRARY_PATH"
-        //     }
-        // ],
+        "environment": [
+            {
+                "name": "GAMEBOY",
+                "value": "${workspaceFolder}"
+            },
+            {
+                "name": "LD_LIBRARY_PATH",
+                "value": "${workspaceFolder}/packages/linux/lib:$LD_LIBRARY_PATH"
+            }
+        ],
         "externalConsole": false,
         "MIMode": "gdb",
         "setupCommands": [
