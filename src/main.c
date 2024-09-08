@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <raylib.h>
 
+#include <log.h>
 #include <cpu.h>
 #include <gpu.h>
 #include <screen.h>
@@ -13,19 +14,22 @@ static const int screenHeight = scale*144;    // 144
 
 
 void frameStep(uint8_t breakpoint){
-    uint16_t frameClock = Z80->m + 17556;
+    uint16_t frameClock = Z80->clock_m + 17556;
 
     if (breakpoint > 0){
-        while(Z80->m < Z80->m + breakpoint){
+        while(Z80->clock_m < Z80->clock_m + breakpoint){
+            if(Z80->halt){
+                Z80->R->m = 1;
+            }
             execute_instruction(Z80->R->PC);
             Z80->R->PC++;
-            Z80->m += Z80->R->m;
+            Z80->clock_m += Z80->R->m;
         }
     }else{
-        while(Z80->m < frameClock){
+        while(Z80->clock_m < frameClock){
         execute_instruction(Z80->R->PC);
         Z80->R->PC++;
-        Z80->m += Z80->R->m;
+        Z80->clock_m += Z80->R->m;
         }
     }
 }
@@ -38,16 +42,14 @@ int main(int argc, char *argv[])
     GB_Win = initScreen(screenWidth, screenHeight);
 
     // Load ROM 
+    log_info("Loading ROM: %s", argv[1]);
     char *filename = argv[1];
     resetCPU();
     read_ROM(filename);
 
+
     // Print bios loaded
-    printf("BIOS:\n");
-    for (int i = 0; i < 256; i++){
-        printf("%02X ", MMU->bios[i]);
-    }
-    printf("\n");
+    log_info("BIOS loaded");
 
     InitWindow(screenWidth, screenHeight, "GameBoy Emulator");
 

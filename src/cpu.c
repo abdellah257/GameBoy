@@ -9,8 +9,9 @@ CPU *Z80;
 CPU* initCPU(){
     CPU* p = malloc(sizeof(CPU));
     p->R = initRegs();
-    p->m = 0;
-    p->t = 0;
+    p->clock_m = 0;
+    p->clock_t = 0;
+    p->halt = false;
     return p;
 }
 void resetCPU(){
@@ -20,7 +21,7 @@ void resetCPU(){
     Z80->R->A = 1;
     Z80->R->C = 0x13;
     Z80->R->HL = 0x014D;
-    Z80->R->m = 0; Z80->t = 0;
+    Z80->R->m = 0; Z80->clock_t = 0;
 }
 
 /* Instructions */
@@ -28,7 +29,7 @@ void resetCPU(){
 // Load Instructions
 void LD_r8_imm(uint8_t* X, uint8_t imm8){
     *X = imm8;
-    Z80->R->m = 2; Z80->t = 8;
+    Z80->R->m = 2; Z80->clock_t = 8;
 }
 void LD_r8_r8(uint8_t* X, uint8_t* Y){
     /* LD X Y  load Y(copy) on X */
@@ -40,18 +41,18 @@ void LD_r16_imm(uint16_t *r16, uint16_t imm16){
     uint16_t temp = imm16;
     r16[0] = temp & 0xFF;
     r16[1] = (temp >> 8) & 0xFF;
-    Z80->R->m = 3; Z80->t = 12;
+    Z80->R->m = 3; Z80->clock_t = 12;
 }
 void LD_mem_A(uint16_t addr){
     uint8_t val = Z80->R->A;
     wb(addr, val);
-    Z80->R->m = 2; Z80->t = 4;
+    Z80->R->m = 2; Z80->clock_t = 4;
 }
 void LD_A_mem(uint16_t addr){
     // addr comes from r16 registers
     uint8_t val = rb(addr);
     Z80->R->A = val;
-    Z80->R->m = 2; Z80->t = 4;
+    Z80->R->m = 2; Z80->clock_t = 4;
 }
 void LDH_C_A(){
     uint8_t val = Z80->R->A;
@@ -83,13 +84,13 @@ void RLCA(){
     uint8_t temp = Z80->R->A >> 7;
     Z80->R->A = (Z80->R->A << 1) | temp;
     if(! temp) Z80->R->F |= FC;
-    Z80->R->m = 1; Z80->t = 4;
+    Z80->R->m = 1; Z80->clock_t = 4;
 }
 void RRCA(){
     uint8_t temp = Z80->R->A << 7;
     Z80->R->A = (Z80->R->A >> 1) | temp;
     if(! (temp >> 7)) Z80->R->F |= FC;
-    Z80->R->m = 1; Z80->t = 4;
+    Z80->R->m = 1; Z80->clock_t = 4;
 }
 void RLA(){
     if((Z80->R->F & FC) == FC){
@@ -97,7 +98,7 @@ void RLA(){
     }else{
         Z80->R->A = (Z80->R->A << 1);
     }
-    Z80->R->m = 1; Z80->t = 4;
+    Z80->R->m = 1; Z80->clock_t = 4;
 }
 void RRA(){
     if((Z80->R->F & FC) == FC){
@@ -105,7 +106,7 @@ void RRA(){
     }else{
         Z80->R->A = (Z80->R->A >> 1);
     }
-    Z80->R->m = 1; Z80->t = 4;
+    Z80->R->m = 1; Z80->clock_t = 4;
 }
 
 // Arithmetic Instructions
@@ -116,14 +117,14 @@ void ADD_A_r8(uint8_t Y)
     Z80->R->A += Y;
     if(!Z80->R->A) Z80->R->F |= FZ;
     if( temp > 255) Z80->R->F |= FC;
-    Z80->R->m = 1; Z80->t = 4;
+    Z80->R->m = 1; Z80->clock_t = 4;
 }
 void ADD_A_imm(uint8_t Y){
     int temp = Z80->R->A + Y;
     Z80->R->A += Y;
     if(!Z80->R->A) Z80->R->F |= FZ;
     if( temp > 255) Z80->R->F |= FC;
-    Z80->R->m = 2; Z80->t = 4;
+    Z80->R->m = 2; Z80->clock_t = 4;
 }
 void ADC_A_r8(uint8_t r8){
     int temp = Z80->R->A + r8;
@@ -133,7 +134,7 @@ void ADC_A_r8(uint8_t r8){
     }
     if(!Z80->R->A) Z80->R->F |= FZ;
     if( temp > 255) Z80->R->F |= FC;
-    Z80->R->m = 1; Z80->t = 4;
+    Z80->R->m = 1; Z80->clock_t = 4;
 }
 void ADC_A_imm(uint8_t r8){
     int temp = Z80->R->A + r8;
@@ -143,7 +144,7 @@ void ADC_A_imm(uint8_t r8){
     }
     if(!Z80->R->A) Z80->R->F |= FZ;
     if( temp > 255) Z80->R->F |= FC;
-    Z80->R->m = 2; Z80->t = 4;
+    Z80->R->m = 2; Z80->clock_t = 4;
 }
 void SUB_A_r8(uint8_t r8){
     if(r8 > Z80->R->A){
@@ -225,7 +226,7 @@ void CP_A_r8(uint8_t Y){
     Z80->R->F |= 0x40;
     if(!(temp & 255)) Z80->R->F |= 0x80;
     if( temp < 0 ) Z80->R->F |= 0x10;
-    Z80->R->m = 1; Z80->t = 4;
+    Z80->R->m = 1; Z80->clock_t = 4;
 }
 void CP_A_imm(uint8_t Y){
     int temp = Z80->R->A;
@@ -241,12 +242,12 @@ void INC_8(uint8_t* r8){
     if(!temp) Z80->R->F |= FZ;
     Z80->R->F &= ~FC;
     Z80->R->F &= ~FS;
-    Z80->R->m = 1; Z80->t = 4;
+    Z80->R->m = 1; Z80->clock_t = 4;
 }
 void INC_16(uint16_t *r16){
     uint16_t* pt = (uint16_t*)r16;
     *pt += 1;
-    Z80->R->m = 2; Z80->t = 4;
+    Z80->R->m = 2; Z80->clock_t = 4;
 }
 void DEC_8(uint8_t *r8){
     *r8 -= 1;
@@ -254,12 +255,12 @@ void DEC_8(uint8_t *r8){
     Z80->R->F |= FS;
     if(!temp) Z80->R->F |= FZ;
     Z80->R->F &= ~FC;
-    Z80->R->m = 1; Z80->t = 4;
+    Z80->R->m = 1; Z80->clock_t = 4;
 }
 void DEC_16(uint16_t *r16){
     uint16_t* pt = (uint16_t*)r16;
     *pt -= 1;
-    Z80->R->m = 2; Z80->t = 4;
+    Z80->R->m = 2; Z80->clock_t = 4;
 }
 void ADD_HL_r16(uint16_t* r16){
     int temp = *r16 + Z80->R->HL;
@@ -267,7 +268,7 @@ void ADD_HL_r16(uint16_t* r16){
     if( temp > 0xFFFF) Z80->R->F |= FC;
     else if(temp > 0xFFF) Z80->R->F |= FH;
     Z80->R->HL = temp & 0xFFFF;
-    Z80->R->m = 2; Z80->t = 4;
+    Z80->R->m = 2; Z80->clock_t = 4;
 }
 
 // Jumps & Subroutine instructions
@@ -308,7 +309,7 @@ void JR(uint16_t addr){
     if ( (offset < 128) | (offset > -127)){
         Z80->R->PC += offset;
     }
-    Z80->R->m = 3; Z80->t = 8;
+    Z80->R->m = 3; Z80->clock_t = 8;
 }
 void JR_C(enum cond c, uint16_t addr)
 {
@@ -404,21 +405,21 @@ void LD_mem_sp(uint16_t addr){
     temp[0] = Z80->R->SP & 0xFF;
     temp[1] = Z80->R->SP >> 8;
     ww(addr, temp);
-    Z80->R->m = 5; Z80->t = 12;
+    Z80->R->m = 5; Z80->clock_t = 12;
 }
 void LD_sp_imm(uint16_t imm16){
     Z80->R->SP = imm16;
-    Z80->R->m = 3; Z80->t = 12;
+    Z80->R->m = 3; Z80->clock_t = 12;
 }
 void PUSH_(uint16_t *r16){
     Z80->R->SP=-2;
     ww(Z80->R->SP, *r16);
-    Z80->R->m = 3; Z80->t = 12;
+    Z80->R->m = 3; Z80->clock_t = 12;
 }
 void POP_(uint16_t *r16){
     *r16 = rw(Z80->R->SP);
     Z80->R->SP += 2;
-    Z80->R->m = 3; Z80->t = 12;
+    Z80->R->m = 3; Z80->clock_t = 12;
 }
 void ADD_sp_imm(int8_t imm8){
     Z80->R->SP += imm8;
@@ -437,7 +438,7 @@ void LD_sp_HL(){
 // Miscalaneous Instructions
 
 void NOP_(){
-    Z80->R->m = 1; Z80->t = 4;
+    Z80->R->m = 1; Z80->clock_t = 4;
 }
 void DAA(){
     uint8_t a = Z80->R->A;
@@ -454,19 +455,19 @@ void SCF(){
     Z80->R->F |= FC;
     Z80->R->F &= ~FS;
     Z80->R->F &= ~FH;
-    Z80->R->m = 1; Z80->t = 4;
+    Z80->R->m = 1; Z80->clock_t = 4;
 }
 void CCF(){
     Z80->R->F = ~(Z80->R->F & FC);
     Z80->R->F &= ~FS;
     Z80->R->F &= ~FH;
-    Z80->R->m = 1; Z80->t = 4;
+    Z80->R->m = 1; Z80->clock_t = 4;
 }
 void CPL(){
     Z80->R->A = ~Z80->R->A;
     Z80->R->F |= FH;
     Z80->R->F |= FS;
-    Z80->R->m = 1; Z80->t = 4;
+    Z80->R->m = 1; Z80->clock_t = 4;
 }
 void HALT(){}
 void DI(){}

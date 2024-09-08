@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -g -std=gnu11 -Wall -Wparentheses
 INCLUDES = -I$(GAMEBOY)/include -I$(RAYLIB)/include
 LIBS = -L$(RAYLIB)/lib
-LISTSRC = cpu gpu memoryUnit registers screen fetch_decode
+LISTSRC = cpu gpu memoryUnit registers screen fetch_decode log
 
 PATH2SRC = $(GAMEBOY)/src
 PATH2OBJ = $(GAMEBOY)/build

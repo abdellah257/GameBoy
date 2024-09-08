@@ -3,15 +3,17 @@
 
 #include <registers.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 /* Z80 CPU Structure */
 typedef struct CPU {
     /* data */
     struct Registers* R;                    // Registers
 
-    uint8_t m;                        // CPU M-Cycles
-    uint8_t t;                        // CPU T-Cycles
+    uint8_t clock_m;                        // CPU M-Cycles
+    uint8_t clock_t;                        // CPU T-Cycles
 
+    bool halt;
 } CPU;
 
 extern CPU *Z80;
